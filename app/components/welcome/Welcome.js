@@ -50,7 +50,7 @@ class Welcome extends Component {
   render () {
     return (
       <View style={[styles.wrapper, styles.backgroundPastelBlue, {paddingTop: 100, alignItems: 'center'}]}>
-        <Text style={[styles.f_30, styles.colorWhite, {paddingBottom: 20}]}>Welcome to Pairachute!</Text>
+        <Text style={[styles.f_30, styles.colorWhite, {paddingBottom: 20}]}>Welcome to PairUp!</Text>
         <Text style={[styles.f_10, styles.colorWhite]}>An app to support mentor</Text>
         <Text style={[styles.f_10, styles.colorWhite]}>& mentee relationships</Text>
         <View style={styles.padding_50}>

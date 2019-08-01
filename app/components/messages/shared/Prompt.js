@@ -169,7 +169,7 @@ class Prompt extends Component {
           <KeyboardAvoidingView behavior={this.state.behavior} style={[styles.darkenedBackgroundOverlay, {borderColor: 'black'}]}>
             <View style={styles.promptResponseModal}>
               <View style={styles.promptModalHeaderContainer}>
-                <Text style={styles.promptModalHeading}>Pairachute Prompt</Text>
+                <Text style={styles.promptModalHeading}>PairUp Prompt</Text>
               </View>
               <View style={styles.promptTextContainer}>
                 <Text>{this.props.data.message}</Text>
@@ -194,8 +194,8 @@ class Prompt extends Component {
           <View style={styles.promptHeadingContainer}>
             <MaterialInitials
               backgroundColor={(answered) ? constants.promptDoneButtonColor : '#659EFF'}
-              color={'white'} size={25} text={'Pairachute'} />
-            <Text style={styles.promptHeading}>Pairachute Prompt</Text>
+              color={'white'} size={25} text={'PairUp'} />
+            <Text style={styles.promptHeading}>PairUp Prompt</Text>
           </View>
           <Text style={styles.promptTimestamp}>{this._renderPromptDate()}</Text>
           <View style={styles.promptTextContainer}>

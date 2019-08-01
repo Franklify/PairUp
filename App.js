@@ -8,7 +8,7 @@ import AppWithNavigationState from './app/config/AppNavigator'
 // Redux store
 const store = configureStore()
 
-class PairachuteApp extends Component {
+class PairUpApp extends Component {
   render () {
     return (
       <Provider store={store}>
@@ -18,5 +18,5 @@ class PairachuteApp extends Component {
   }
 }
 
-AppRegistry.registerComponent('PairachuteApp', () => PairachuteApp)
-export default PairachuteApp
+AppRegistry.registerComponent('PairUpApp', () => PairUpApp)
+export default PairUpApp

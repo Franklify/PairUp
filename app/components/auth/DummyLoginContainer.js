@@ -31,7 +31,7 @@ class DummyLogin extends Component {
   render () {
     return (
       <View style={styles.container}>
-        <Text style={styles.authTitle}>Pairachute</Text>
+        <Text style={styles.authTitle}>PairUp</Text>
         <Text>Dummy Login - for testing purposes only</Text>
         <Button
           disabled={this.state.loginDisabled}
