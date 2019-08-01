@@ -85,17 +85,31 @@ class ChangeAvatar extends Component {
     />
   );
 
+  _renderAvatarRow = ({item}) => (
+    <FlatList
+      data={item}
+      horizontal={true}
+      scrollEnabled={false}
+      renderItem={this._renderAvatar}
+    />
+  );
+
   render() {
     avatarData = []
-    for (var i=0; i < avatarImages.length; i++) {
-      avatarData.push({key: i.toString(), index: i})
+    for (var i=0; i < avatarImages.length / 2; i++) {
+      avatarDataRow = []
+      for (var j=0; j < 2; j++) {
+        index = i * 2 + j
+        avatarDataRow.push({key: index.toString(), index: index})
+      }
+      avatarData.push(avatarDataRow)
     }
     return (
       <View style={styles.settingsAvatarContainer}>
         <FlatList
           data={avatarData}
-          showsHorizontalScrollIndicator={false}
-          renderItem={this._renderAvatar}
+          showsVerticalScrollIndicator={false}
+          renderItem={this._renderAvatarRow}
         />
       </View>
     )
