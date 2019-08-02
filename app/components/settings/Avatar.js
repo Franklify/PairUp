@@ -6,6 +6,7 @@ import {
 } from 'react-native'
 
 const constants = require('../../styles/constants.js')
+const settingsStyles = require('./styles.js')
 const styles = require('../../styles/styles.js')
 const avatarNeutral = require('../../../resources/avatars/avatar_general.png')
 const avatarImages = [
@@ -55,7 +56,7 @@ class Avatar extends React.PureComponent {
 
   _renderBorder () {
     return (
-      <View style={styles.settingsAvatarSelected}></View>
+      <View style={settingsStyles.settingsAvatarSelected}></View>
     )
   }
 
@@ -65,10 +66,10 @@ class Avatar extends React.PureComponent {
         activeOpacity={.5}
         underlayColor={constants.pastelBlue}
         onPress={this._onPress}>
-        <View style={styles.settingsAvatarSelectedContainer}>
+        <View style={settingsStyles.settingsAvatarSelectedContainer}>
           <Image
             source={avatarImages[parseInt(this.props.index)]}
-            style={styles.settingsAvatar}
+            style={settingsStyles.settingsAvatar}
           />
           {this.props.selected == this.props.index.toString() ? this._renderBorder() : null}
         </View>
