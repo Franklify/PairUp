@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+const settingsStyles = require('./styles.js')
 const styles = require('../../styles/styles.js')
 
 class ChangePassword extends Component {
@@ -51,17 +52,17 @@ class ChangePassword extends Component {
           onChangeText={(password) => this.setState({password: password, displayMessages: false})}
           placeholder={'New Password'}
           secureTextEntry
-          style={[styles.authInput, {width: this.state.screenWidth - 20}]}
+          style={[styles.authInput, settingsStyles.settingsInput]}
         />
         <TextInput
           onChange={this._handleChange}
           onChangeText={(password2) => this.verifyPassword(password2)}
           placeholder={'Verify New Password'}
           secureTextEntry
-          style={[styles.authInput, this.state.passwordMatch ? null : styles.authInputIncorrect, {width: this.state.screenWidth - 20}]}
+          style={[styles.authInput, this.state.passwordMatch ? null : styles.authInputIncorrect, settingsStyles.settingsInput]}
         />
         <TouchableHighlight
-          style={[styles.settingsButtonInverted, {marginTop: 10}]}
+          style={styles.settingsButtonInverted}
           onPress={() => this._handleSubmit()}>
           <Text style={styles.settingsButtonTextInverted}> Change Password </Text>
         </TouchableHighlight>

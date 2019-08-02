@@ -7,6 +7,7 @@ import {
 } from 'react-native'
 import { SimpleLineIcons } from '@expo/vector-icons'
 import { NavigationActions } from 'react-navigation'
+const settingsStyles = require('./styles.js')
 const styles = require('../../styles/styles.js')
 
 var reactNative = require('react-native');
@@ -91,21 +92,21 @@ class Settings extends Component {
           style={{width: 350, height: 100}}
           source={require('../../../resources/rightpoint_logo.png')}
         />
-        <Text style={styles.settingsText}>{this.props.user.email}</Text>
+        <Text style={settingsStyles.settingsText}>{this.props.user.email}</Text>
         <TouchableHighlight
-          style={styles.settingsButton}
+          style={settingsStyles.settingsButton}
           onPress={() => this.props.navToChangeAvatar()}>
-          <Text style={styles.settingsButtonText}> Change Avatar </Text>
+          <Text style={settingsStyles.settingsButtonText}> Change Avatar </Text>
         </TouchableHighlight>
         <TouchableHighlight
-          style={styles.settingsButton}
+          style={settingsStyles.settingsButton}
           onPress={() => this.props.navToChangePassword()}>
-          <Text style={styles.settingsButtonText}> Change Password </Text>
+          <Text style={settingsStyles.settingsButtonText}> Change Password </Text>
         </TouchableHighlight>
         <TouchableHighlight
-          style={styles.settingsButton}
+          style={settingsStyles.settingsButton}
           onPress={() => this.logout()}>
-          <Text style={styles.settingsButtonText}> Log Out </Text>
+          <Text style={settingsStyles.settingsButtonText}> Log Out </Text>
         </TouchableHighlight>
       </View>
     )
