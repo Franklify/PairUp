@@ -2,17 +2,18 @@
   "expo": {
     "name": "pairup",
     "icon": "resources/ios/pairup_icon_ios.png",
-    "version": "1.2.1",
+    "version": "2.0.1",
     "sdkVersion": "33.0.0",
     "slug": "pairup-slug",
     "ios": {
       "bundleIdentifier": "com.pairachute.pairachuteapp",
-      "icon": "resources/ios/pairup_icon_ios.png"
+      "icon": "resources/ios/pairup_icon_ios.png",
+      "supportsTablet": false,
     },
     "android": {
       "package": "com.pairachute.pairachute",
       "icon": "resources/android/pairup_icon_android.png",
-      "versionCode": 8
+      "versionCode": 9
     }
   }
 }
