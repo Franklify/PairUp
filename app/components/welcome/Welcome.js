@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import {
   Button,
   Image,
+  ScrollView,
   Text,
   TouchableHighlight,
   View,
@@ -10,6 +11,7 @@ import { SimpleLineIcons } from '@expo/vector-icons'
 import { NavigationActions } from 'react-navigation'
 const constants = require('../../styles/constants.js')
 const styles = require('../../styles/styles.js')
+const welcomeStyles = require('./styles.js')
 
 class Welcome extends Component {
   constructor(props) {
@@ -47,58 +49,65 @@ class Welcome extends Component {
     NavigationActions.navigate({routeName: 'Home'})
   }
 
-  render () {
+  _renderInstructionStep (stepNumber, icon, title, description) {
+    const imagePath = stepNumber == 1 ?
+      require('../../../resources/Screenshots/step1.png') :
+        stepNumber == 2 ?
+          require('../../../resources/Screenshots/step2.png') :
+          require('../../../resources/Screenshots/step3.png')
     return (
-      <View style={[styles.wrapper, styles.backgroundPastelBlue, {paddingTop: 100, alignItems: 'center'}]}>
-        <Text style={[styles.f_30, styles.colorWhite, {paddingBottom: 20}]}>Welcome to PairUp!</Text>
-        <Text style={[styles.f_10, styles.colorWhite]}>An app to support mentor</Text>
-        <Text style={[styles.f_10, styles.colorWhite]}>& mentee relationships</Text>
-        <View style={styles.padding_50}>
-          <View style={styles.padding_21}>
-            <View style={styles.flexRowCenter}>
-              <SimpleLineIcons name='bell' size={25} color='white' />
-              <Text style={[styles.f_20, styles.padding_10, styles.colorWhite]}>Step 1: Notify</Text>
-            </View>
-            <Image
-              style={[styles.borderCurve, {height: 80, width: 200}]}
-              source={require('../../../resources/Screenshots/step1.png')}
-            />
-          </View>
-          <View style={styles.padding_10}>
-            <View style={styles.flexRowCenter}>
-              <SimpleLineIcons name='note' size={25} color='white' />
-              <Text style={[styles.f_20, styles.padding_10, styles.colorWhite]}>Step 2: Answer</Text>
-            </View>
-            <Image
-              style={[styles.borderCurve, {height: 80, width: 200}]}
-              source={require('../../../resources/Screenshots/step2.png')}
-            />
-          </View>
-          <View style={styles.padding_10}>
-            <View style={styles.flexRowCenter}>
-              <SimpleLineIcons name='bubbles' size={25} color='white' />
-              <Text style={[styles.f_20, styles.padding_10, styles.colorWhite]}>Step 3: Support</Text>
-            </View>
-            <Image
-              style={[styles.borderCurve, {height: 80, width: 200}]}
-              source={require('../../../resources/Screenshots/step3.png')}
-            />
-          </View>
+      <View style={styles.padding_10}>
+        <View style={styles.flexRowCenter}>
+          <SimpleLineIcons name={icon} size={25} color='white' />
+          <Text style={[styles.f_20, styles.padding_10, styles.colorWhite]}>
+          Step {stepNumber}: {title}
+          </Text>
+        </View>
+        <Text style={[styles.f_15, styles.colorWhite, {paddingBottom: 10}]}>
+          {description}
+        </Text>
+        <View style={welcomeStyles.instructionImageContainer}>
+          <Image
+            style={[styles.borderCurve, welcomeStyles.instructionImage]}
+            source={imagePath}
+          />
         </View>
       </View>
     )
   }
-}
 
-// <TouchableHighlight
-//   onPress={() => console.log('sup')}
-//   underlayColor={'rgba(0,0,0,0)'}
-// >
-//   <Text>Got it! Don’t show me this again.</Text>
-// </TouchableHighlight>
-// <Button
-//   onPress={ () => this.props.navToHome() }
-//   title={'Get Started'}
-// />
+  render () {
+    return (
+      <ScrollView style={[styles.wrapper, styles.backgroundPastelBlue, {paddingTop: '15%'}]}>
+        <View style={welcomeStyles.welcomeTitle}>
+          <Text style={[styles.f_30, styles.colorWhite, {paddingBottom: 20}]}>Welcome to PairUp!</Text>
+          <Text style={[styles.f_10, styles.colorWhite]}>An app to support mentor</Text>
+          <Text style={[styles.f_10, styles.colorWhite]}>& mentee relationships</Text>
+        </View>
+        <View style={[styles.padding_10, {paddingBottom: 50}]}>
+
+          {this._renderInstructionStep(
+            1,
+            'bell',
+            'Notify',
+            "You'll receive a notification for new prompts.",
+          )}
+          {this._renderInstructionStep(
+            2,
+            'note',
+            'Answer',
+            'Reflect on the question and answer.',
+          )}
+          {this._renderInstructionStep(
+            3,
+            'bubbles',
+            'Support',
+            "Respond to you partner's answers!",
+          )}
+        </View>
+      </ScrollView>
+    )
+  }
+}
 
 export default Welcome
