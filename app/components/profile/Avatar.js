@@ -2,19 +2,12 @@ import React, { Component } from 'react'
 import {
   Image,
   TouchableHighlight,
-  Text,
   View,
 } from 'react-native'
-import { SimpleLineIcons } from '@expo/vector-icons'
-import { NavigationActions } from 'react-navigation'
-const settingsStyles = require('./styles.js')
+
+const constants = require('../../styles/constants.js')
+const profileStyles = require('./styles.js')
 const styles = require('../../styles/styles.js')
-
-var reactNative = require('react-native');
-var {
-  AsyncStorage
-} = reactNative;
-
 const avatarNeutral = require('../../../resources/avatars/avatar_general.png')
 const avatarImages = [
   // Women straight hair
@@ -56,61 +49,33 @@ const avatarImages = [
   require('../../../resources/avatars/avatar_white_long_blond_glasses.png')
 ]
 
-class Settings extends Component {
-  static navigationOptions = {
-    header: null,
-    tabBarIcon: ({tintColor}) => (
-      <SimpleLineIcons name='settings' size={26} color={tintColor} />
-    ),
-    tabBarLabel: 'Settings'
-  }
+class Avatar extends React.PureComponent {
+  _onPress = () => {
+    this.props.onPress(this.props.index.toString());
+  };
 
-  logout() {
-    AsyncStorage.multiRemove(['email', 'password']);
-    /*return async function (dispatch) {
-      try {
-        dispatch(NavigationActions.navigate({routeName: 'Login'}))
-      } catch (error) {
-        console.log(error.message)
-      }
-    }*/
+  _renderBorder () {
+    return (
+      <View style={profileStyles.profileAvatarSelected}></View>
+    )
   }
 
   render() {
-    console.log("Index")
-    console.log(this.props.user)
-    avatar = (this.props.user.avatarIndex && this.props.user.avatarIndex !== "None")
-      ? avatarImages[this.props.user.avatarIndex]
-      : avatarNeutral
     return (
-      <View style={styles.container}>
-        <Image
-          style={{width: 75, height: 75}}
-          source={avatar}
-        />
-        <Image
-          style={{width: 350, height: 100}}
-          source={require('../../../resources/rightpoint_logo.png')}
-        />
-        <Text style={settingsStyles.settingsText}>{this.props.user.email}</Text>
-        <TouchableHighlight
-          style={settingsStyles.settingsButton}
-          onPress={() => this.props.navToChangeAvatar()}>
-          <Text style={settingsStyles.settingsButtonText}> Change Avatar </Text>
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={settingsStyles.settingsButton}
-          onPress={() => this.props.navToChangePassword()}>
-          <Text style={settingsStyles.settingsButtonText}> Change Password </Text>
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={settingsStyles.settingsButton}
-          onPress={() => this.logout()}>
-          <Text style={settingsStyles.settingsButtonText}> Log Out </Text>
-        </TouchableHighlight>
-      </View>
+      <TouchableHighlight
+        activeOpacity={.5}
+        underlayColor={constants.pastelBlue}
+        onPress={this._onPress}>
+        <View style={profileStyles.profileAvatarSelectedContainer}>
+          <Image
+            source={avatarImages[parseInt(this.props.index)]}
+            style={profileStyles.profileAvatar}
+          />
+          {this.props.selected == this.props.index.toString() ? this._renderBorder() : null}
+        </View>
+      </TouchableHighlight>
     )
   }
 }
 
-export default Settings
+export default Avatar

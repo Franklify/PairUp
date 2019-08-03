@@ -11,22 +11,22 @@ import { SimpleLineIcons } from '@expo/vector-icons'
 import { NavigationActions } from 'react-navigation'
 const constants = require('../../styles/constants.js')
 const styles = require('../../styles/styles.js')
-const welcomeStyles = require('./styles.js')
+const aboutStyles = require('./styles.js')
 
-class Welcome extends Component {
+class About extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      dismissWelcomeCheckbox: false,
+      dismissAboutCheckbox: false,
     }
   }
 
   static navigationOptions = {
     header: null,
     tabBarIcon: ({tintColor}) => (
-      <SimpleLineIcons name='home' size={26} color={tintColor} />
+      <SimpleLineIcons name='info' size={26} color={tintColor} />
     ),
-    tabBarLabel: 'Welcome'
+    tabBarLabel: 'About'
   }
 
   componentDidMount() {
@@ -42,7 +42,7 @@ class Welcome extends Component {
   }
 
   _toggleCheckbox () {
-    this.setState({dismissWelcomeCheckbox: !this.state.dismissWelcomeCheckbox})
+    this.setState({dismissAboutCheckbox: !this.state.dismissAboutCheckbox})
   }
 
   _goToHome () {
@@ -66,9 +66,9 @@ class Welcome extends Component {
         <Text style={[styles.f_15, styles.colorWhite, {paddingBottom: 10}]}>
           {description}
         </Text>
-        <View style={welcomeStyles.instructionImageContainer}>
+        <View style={aboutStyles.aboutInstructionImageContainer}>
           <Image
-            style={[styles.borderCurve, welcomeStyles.instructionImage]}
+            style={[styles.borderCurve, aboutStyles.aboutInstructionImage]}
             source={imagePath}
           />
         </View>
@@ -79,7 +79,7 @@ class Welcome extends Component {
   render () {
     return (
       <ScrollView style={[styles.wrapper, styles.backgroundPastelBlue, {paddingTop: '15%'}]}>
-        <View style={welcomeStyles.welcomeTitle}>
+        <View style={aboutStyles.aboutTitle}>
           <Text style={[styles.f_30, styles.colorWhite, {paddingBottom: 20}]}>Welcome to PairUp!</Text>
           <Text style={[styles.f_10, styles.colorWhite]}>An app to support mentor</Text>
           <Text style={[styles.f_10, styles.colorWhite]}>& mentee relationships</Text>
@@ -110,4 +110,4 @@ class Welcome extends Component {
   }
 }
 
-export default Welcome
+export default About

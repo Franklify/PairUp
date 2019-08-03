@@ -2,7 +2,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { navToChangeAvatar, navToChangePassword } from '../../actions/authActions'
 
-import Settings from './Settings'
+import Profile from './Profile'
 
 const mapStateToProps = (state) => {
   return {
@@ -17,9 +17,9 @@ const mapDispatchToProps = (dispatch) => {
   }, dispatch)
 }
 
-const SettingsContainer = connect(
+const ProfileContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(Settings)
+)(Profile)
 
-export default SettingsContainer
+export default ProfileContainer

@@ -2,15 +2,15 @@ const React = require('react-native')
 const { StyleSheet } = React
 
 const styles = StyleSheet.create({
-  welcomeTitle: {
+  aboutTitle: {
     alignItems: 'center',
   },
 
-  instructionImageContainer: {
+  aboutInstructionImageContainer: {
     alignItems: 'center',
   },
 
-  instructionImage: {
+  aboutInstructionImage: {
     height: 80,
     width: 200,
   }

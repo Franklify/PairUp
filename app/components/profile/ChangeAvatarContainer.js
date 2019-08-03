@@ -12,7 +12,7 @@ import {
 } from 'react-native'
 import Avatar from './Avatar'
 
-const settingsStyles = require('./styles.js')
+const profileStyles = require('./styles.js')
 const styles = require('../../styles/styles.js')
 const avatarNeutral = require('../../../resources/avatars/avatar_general.png')
 const avatarImages = [
@@ -106,7 +106,7 @@ class ChangeAvatar extends Component {
       avatarData.push(avatarDataRow)
     }
     return (
-      <View style={settingsStyles.settingsAvatarContainer}>
+      <View style={profileStyles.profileAvatarContainer}>
         <FlatList
           data={avatarData}
           showsVerticalScrollIndicator={false}

@@ -79,7 +79,7 @@ export function user (state = {}, action) {
         providerData: action.user.providerData,
         refreshToken: action.user.refreshToken,
         reflectionType: action.user.reflectionType,
-        showWelcome: action.user.showWelcome,
+        showAbout: action.user.showAbout,
         threads: action.user.threads,
         uid: action.user.uid
       })

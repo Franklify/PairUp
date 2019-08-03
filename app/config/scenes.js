@@ -1,14 +1,14 @@
 import { TabNavigator } from 'react-navigation'
 
-import ChangeAvatarContainer from '../components/settings/ChangeAvatarContainer'
-import ChangePasswordContainer from '../components/settings/ChangePasswordContainer'
+import ChangeAvatarContainer from '../components/profile/ChangeAvatarContainer'
+import ChangePasswordContainer from '../components/profile/ChangePasswordContainer'
 import DummyLoginContainer from '../components/auth/DummyLoginContainer'
 import MessagesTabContainer from '../components/messages/MessagesTabContainer'
 import MessageThreadContainer from '../components/messages/MessageThreadContainer'
 import LoginContainer from '../components/auth/LoginContainer'
-import SettingsContainer from '../components/settings/SettingsContainer'
+import ProfileContainer from '../components/profile/ProfileContainer'
 import SignupContainer from '../components/auth/SignupContainer'
-import WelcomeContainer from '../components/welcome/WelcomeContainer'
+import AboutContainer from '../components/about/AboutContainer'
 
 import ChatTabContainer from '../components/messages/ChatTabContainer'
 import ReflectionTabContainer from '../components/messages/ReflectionTabContainer'
@@ -17,23 +17,23 @@ import ReflectionAndChatTabContainer from '../components/messages/ReflectionAndC
 import * as constants from '../styles/constants'
 
 const MainScreenNavigatorPaired = TabNavigator({
-  WelcomeTab: { screen: WelcomeContainer },
+  ProfileTab: { screen: ProfileContainer },
   ReflectionAndChatTab: { screen: ReflectionAndChatTabContainer },
-  SettingsTab: { screen: SettingsContainer },
+  AboutTab: { screen: AboutContainer },
 }, {
-  initialRouteName: 'WelcomeTab',
+  initialRouteName: 'AboutTab',
   tabBarOptions: {
     activeTintColor: constants.teal
   }
 })
 
 const MainScreenNavigatorSolo = TabNavigator({
-  WelcomeTab: { screen: WelcomeContainer },
+  ProfileTab: { screen: ProfileContainer },
   ReflectionTab: { screen: ReflectionTabContainer },
   ChatTab: { screen: ChatTabContainer },
-  SettingsTab: { screen: SettingsContainer },
+  AboutTab: { screen: AboutContainer },
 }, {
-  initialRouteName: 'WelcomeTab',
+  initialRouteName: 'ProfileTab',
   tabBarOptions: {
     activeTintColor: constants.teal
   }
@@ -46,7 +46,7 @@ export const StackRouteConfigs = {
   Login: { screen: LoginContainer },
   Message: { screen: MessageThreadContainer },
   Signup: { screen: SignupContainer },
-  Welcome: { screen: WelcomeContainer },
+  About: { screen: AboutContainer },
   ChangeAvatar: { screen: ChangeAvatarContainer },
   ChangePassword: { screen: ChangePasswordContainer}
 }

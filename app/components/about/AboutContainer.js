@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { navToHome } from '../../actions/navActions'
 import { registerForPushNotificationsAsync } from '../../actions/authActions'
 
-import Welcome from './Welcome'
+import About from './About'
 
 const mapStateToProps = (state) => {
   return {
@@ -18,9 +18,9 @@ const mapDispatchToProps = (dispatch) => {
   }, dispatch)
 }
 
-const WelcomeContainer = connect(
+const AboutContainer = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(Welcome)
+)(About)
 
-export default WelcomeContainer
+export default AboutContainer

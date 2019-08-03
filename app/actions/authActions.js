@@ -30,7 +30,7 @@ export function login (email, password) {
         providerData: responseUser.providerData,
         refreshToken: responseUser.refreshToken,
         reflectionType: userInfo.reflectionType,
-        showWelcome: userInfo.showWelcome,
+        showAbout: userInfo.showAbout,
         threads: userInfo.threads,
         uid: responseUser.uid
       }
