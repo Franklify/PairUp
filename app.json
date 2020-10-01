@@ -8,7 +8,7 @@
     "ios": {
       "bundleIdentifier": "com.pairachute.pairachuteapp",
       "icon": "resources/ios/pairup_icon_ios.png",
-      "supportsTablet": false,
+      "supportsTablet": false
     },
     "android": {
       "package": "com.pairachute.pairachute",
