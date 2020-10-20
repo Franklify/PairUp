@@ -7,12 +7,12 @@ import React, { Component } from 'react'
 import {
   Image,
   Button,
+  KeyboardAvoidingView,
   Text,
   TextInput,
   TouchableHighlight,
   View
 } from 'react-native'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 const styles = require('../../styles/styles.js')
 
 var reactNative = require('react-native');
@@ -68,10 +68,10 @@ class Login extends Component {
   render () {
       return (
         !this.state.loginDisabled
-        ? (<KeyboardAwareScrollView
+        ? (<KeyboardAvoidingView
             contentContainerStyle={styles.wrapper}
             resetScrollToCoords={{x: 0, y: 0}}
-            style={{backgroundColor: 'white'}}
+            style={{backgroundColor: 'white', flex: 1}}
           >
             <View
               onLayout={(e) => { this.setState({screenWidth: e.nativeEvent.layout.width}) }}
@@ -100,7 +100,7 @@ class Login extends Component {
                 color={'white'}
                 title={this.state.loginText}/>
             </View>
-          </KeyboardAwareScrollView>)
+          </KeyboardAvoidingView>)
         : (<View style={styles.loggingInContainer}>
             <Image
               style={styles.loggingInGif}

@@ -4,12 +4,12 @@ import { changePassword } from '../../actions/authActions'
 
 import React, { Component } from 'react'
 import {
+  KeyboardAvoidingView,
   Text,
   TextInput,
   TouchableHighlight,
   View,
 } from 'react-native'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 const profileStyles = require('./styles.js')
 const styles = require('../../styles/styles.js')
 
@@ -39,7 +39,7 @@ class ChangePassword extends Component {
 
   render() {
     return (
-      <KeyboardAwareScrollView
+      <KeyboardAvoidingView
         contentContainerStyle={styles.wrapper}
         resetScrollToCoords={{x: 0, y: 0}}
         style={styles.backgroundRightpointRed}
@@ -67,7 +67,7 @@ class ChangePassword extends Component {
           <Text style={styles.profileButtonTextInverted}> Change Password </Text>
         </TouchableHighlight>
         </View>
-      </KeyboardAwareScrollView>
+      </KeyboardAvoidingView>
     )
   }
 }

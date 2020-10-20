@@ -6,11 +6,11 @@ import { signup, switchSignupToLogin } from '../../actions/authActions'
 import React, { Component } from 'react'
 import {
   Button,
+  KeyboardAvoidingView,
   Text,
   TextInput,
   View
 } from 'react-native'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 const styles = require('../../styles/styles.js')
 
 export class Signup extends Component {
@@ -37,10 +37,10 @@ export class Signup extends Component {
 
   render () {
     return (
-      <KeyboardAwareScrollView
+      <KeyboardAvoidingView
         contentContainerStyle={styles.wrapper}
         resetScrollToCoords={{x: 0, y: 0}}
-        style={{backgroundColor: 'white'}}
+        style={{backgroundColor: 'white', flex: 1}}
       >
         <View
           onLayout={(e) => { this.setState({screenWidth: e.nativeEvent.layout.width}) }}
@@ -85,7 +85,7 @@ export class Signup extends Component {
             title={'Sign Up'}
           />
         </View>
-      </KeyboardAwareScrollView>
+      </KeyboardAvoidingView>
     )
   }
 }
