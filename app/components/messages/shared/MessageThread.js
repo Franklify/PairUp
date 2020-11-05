@@ -12,7 +12,6 @@ import {
   View
 } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
-import KeyboardSpacer from 'react-native-keyboard-spacer'
 import MessageBubble from './MessageBubble'
 import MessageSuggestions from './MessageSuggestions'
 import Prompt from './Prompt'

@@ -1,5 +1,5 @@
 import * as types from './actionTypes'
-import { NavigationActions } from 'react-navigation'
+import { CommonActions } from '@react-navigation/native'
 import fb from '../config/initializeFirebase'
 
 var db = fb.database()
@@ -45,7 +45,7 @@ export function loadMessages (type, threadId) {
       } else {
         dispatch({type: types.INITIAL_LOAD_REFLECTION_AND_CHAT_MESSAGES_SUCCESS, focusedThread})
       }
-      // dispatch(NavigationActions.navigate({routeName: 'Message', params: {title: focusedThread.title}}))
+      // dispatch(CommonActions.navigate({routeName: 'Message', params: {title: focusedThread.title}}))
 
       // listen for new messages
       try {

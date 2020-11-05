@@ -1,65 +1,69 @@
 import * as types from '../actions/actionTypes'
+import { InitialState } from '../config/PairUpContext'
 
-const initialAuthState = { isAuthenticated: false }
-
-export function authState (state = initialAuthState, action) {
+export function authState (state, action) {
   switch (action.type) {
     case types.LOGIN_ATTEMPT:
     case types.SIGNUP_ATTEMPT:
-      return Object.assign({}, state, {
+      return {...state,
         isAuthenticated: false,
         isPending: true
-      })
+      }
     case types.LOGIN_SUCCESS:
     case types.SIGNUP_SUCCESS:
     case 'Login':
-      return Object.assign({}, state, {
+      return {...state,
         isAuthenticated: true,
         isPending: false
-      })
+      }
     case types.LOGIN_FAILURE:
     case types.SIGNUP_FAILURE:
-      return Object.assign({}, state, {
+      return {...state,
         errorMessage: action.errorMessage,
         isAuthenticated: false,
         isPending: false
-      })
+      }
+    case types.LOGOUT_ATTEMPT:
+      return {...state,
+        isAuthenticated: false,
+        isPending: false,
+      }
     case types.SWITCH_LOGIN_SIGNUP:
-      return Object.assign({}, state, {
+      return {...state,
         errorMessage: '',
         isAuthenticated: false,
         isPending: false
-      })
+      }
     case types.CHANGE_AVATAR_ATTEMPT:
-      return Object.assign({}, state, {
+      return {...state,
         changeAvatarSuccessMessage: '',
         changeAvatarFailureMessage: ''
-      })
+      }
     case types.CHANGE_AVATAR_SUCCESS:
-      return Object.assign({}, state, {
+      return {...state,
         changeAvatarSuccessMessage: action.successMessage,
         changeAvatarFailureMessage: ''
-      })
+      }
     case types.CHANGE_AVATAR_FAILURE:
-      return Object.assign({}, state, {
+      return {...state,
         changeAvatarFailureMessage: action.errorMessage,
         changeAvatarSuccessMessage: ''
-      })
+      }
     case types.CHANGE_PASSWORD_ATTEMPT:
-      return Object.assign({}, state, {
+      return {...state,
         changeAvatarSuccessMessage: '',
         changeAvatarFailureMessage: ''
-      })
+      }
     case types.CHANGE_PASSWORD_SUCCESS:
-      return Object.assign({}, state, {
+      return {...state,
         changePasswordSuccessMessage: action.successMessage,
         changePasswordFailureMessage: ''
-      })
+      }
     case types.CHANGE_PASSWORD_FAILURE:
-      return Object.assign({}, state, {
+      return {...state,
         changePasswordFailureMessage: action.errorMessage,
         changePasswordSuccessMessage: ''
-      })
+      }
     case 'Logout':
       return { ...state, isLoggedIn: false }
     default:
@@ -67,11 +71,11 @@ export function authState (state = initialAuthState, action) {
   }
 }
 
-export function user (state = {}, action) {
+export function user (state, action) {
   switch (action.type) {
     case types.LOGIN_SUCCESS:
     case types.SIGNUP_SUCCESS:
-      return Object.assign({}, state, {
+      return {...state,
         displayName: action.user.displayName,
         email: action.user.email,
         emailVerified: action.user.emailVerified,
@@ -82,7 +86,7 @@ export function user (state = {}, action) {
         showAbout: action.user.showAbout,
         threads: action.user.threads,
         uid: action.user.uid
-      })
+      }
     default:
       return state
   }

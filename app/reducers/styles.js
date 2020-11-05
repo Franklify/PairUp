@@ -560,10 +560,12 @@ const styles = StyleSheet.create({
   profileButtonText: {
     color: 'white'
   },
-  profileAvatarContainer: {
+  profileButtonTextInverted: {
+    color: constants.rightpointRed,
+  },
+  profileAvatarContainers: {
     flex: 1,
     padding: 8,
-    marginBottom: 10,
     flexDirection: 'column', // main axis
     justifyContent: 'center', // main axis
     alignItems: 'center', // cross axis

@@ -1,17 +1,21 @@
-import React, { Component } from 'react'
+import React, {
+  useContext,
+  useEffect,
+} from 'react'
 import {
   Image,
-  TouchableHighlight,
+  Pressable,
   Text,
   View,
 } from 'react-native'
 import { SimpleLineIcons } from '@expo/vector-icons'
-import { NavigationActions } from 'react-navigation'
+import { CommonActions } from '@react-navigation/native'
+import PairUpContext from '../../config/PairUpContext'
 const profileStyles = require('./styles.js')
 const styles = require('../../styles/styles.js')
 
-var reactNative = require('react-native');
-var {
+const reactNative = require('react-native');
+const {
   AsyncStorage
 } = reactNative;
 
@@ -56,61 +60,40 @@ const avatarImages = [
   require('../../../resources/avatars/avatar_white_long_blond_glasses.png')
 ]
 
-class Profile extends Component {
-  static navigationOptions = {
-    header: null,
-    tabBarIcon: ({tintColor}) => (
-      <SimpleLineIcons name='user-female' size={26} color={tintColor} />
-    ),
-    tabBarLabel: 'Profile'
+export default function ProfileScreen({navigation}) {
+  const context = useContext(PairUpContext)
+
+  function getAvatar() {
+    const avatarIndex = context.state.avatarIndex
+    return (avatarIndex && avatarIndex !== "None")
+        ? avatarImages[avatarIndex] : avatarNeutral
   }
 
-  logout() {
-    AsyncStorage.multiRemove(['email', 'password']);
-    /*return async function (dispatch) {
-      try {
-        dispatch(NavigationActions.navigate({routeName: 'Login'}))
-      } catch (error) {
-        console.log(error.message)
-      }
-    }*/
-  }
-
-  render() {
-    console.log("Index")
-    console.log(this.props.user)
-    avatar = (this.props.user.avatarIndex && this.props.user.avatarIndex !== "None")
-      ? avatarImages[this.props.user.avatarIndex]
-      : avatarNeutral
-    return (
-      <View style={styles.container}>
-        <Image
-          style={{width: 75, height: 75}}
-          source={avatar}
-        />
-        <Image
-          style={{width: 350, height: 100}}
-          source={require('../../../resources/rightpoint_logo.png')}
-        />
-        <Text style={profileStyles.profileText}>{this.props.user.email}</Text>
-        <TouchableHighlight
-          style={profileStyles.profileButton}
-          onPress={() => this.props.navToChangeAvatar()}>
-          <Text style={profileStyles.profileButtonText}> Change Avatar </Text>
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={profileStyles.profileButton}
-          onPress={() => this.props.navToChangePassword()}>
-          <Text style={profileStyles.profileButtonText}> Change Password </Text>
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={profileStyles.profileButton}
-          onPress={() => this.logout()}>
-          <Text style={profileStyles.profileButtonText}> Log Out </Text>
-        </TouchableHighlight>
-      </View>
-    )
-  }
+  return (
+    <View style={styles.container}>
+      <Image
+        style={{width: 75, height: 75}}
+        source={getAvatar()}
+      />
+      {context.state.displayName &&
+          <Text style={styles.profileText}>{context.state.displayName}</Text>
+        }
+      <Text style={[styles.profileText, styles.profileEmail]}>{context.state.email}</Text>
+      <Pressable
+        style={styles.profileButton}
+        onPress={() => navigation.navigate('ChangeAvatar')}>
+        <Text style={profileStyles.profileButtonText}> Change Avatar </Text>
+      </Pressable>
+      <Pressable
+        style={styles.profileButton}
+        onPress={() => navigation.navigate('ChangePassword')}>
+        <Text style={profileStyles.profileButtonText}> Change Password </Text>
+      </Pressable>
+      <Pressable
+        style={styles.profileButton}
+        onPress={() => context.logout()}>
+        <Text style={profileStyles.profileButtonText}> Log Out </Text>
+      </Pressable>
+    </View>
+  )
 }
-
-export default Profile

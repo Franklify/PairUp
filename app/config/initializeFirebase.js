@@ -1,5 +1,6 @@
 import * as firebase from 'firebase'
 import * as secrets from './secrets'
+
 // Initialize Firebase
 const firebaseConfig = {
   apiKey: secrets.FIREBASE_API_KEY,

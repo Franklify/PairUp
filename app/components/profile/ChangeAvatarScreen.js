@@ -1,8 +1,7 @@
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import { changeAvatar } from '../../actions/authActions'
-
-import React, { Component } from 'react'
+import React, {
+  useContext,
+  useState
+} from 'react'
 import {
   FlatList,
   Image,
@@ -10,6 +9,8 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native'
+import { changeAvatar } from '../../actions/authActions'
+import PairUpContext from '../../config/PairUpContext'
 import Avatar from './Avatar'
 
 const profileStyles = require('./styles.js')
@@ -55,81 +56,48 @@ const avatarImages = [
   require('../../../resources/avatars/avatar_white_long_blond_glasses.png')
 ]
 
-class ChangeAvatar extends Component {
-  static navigationOptions = {
-    title: 'Change Avatar'
+export default function ChangeAvatarScreen({navigation}) {
+  const context = useContext(PairUpContext)
+  const [avatarIndex, setAvatarIndex] = useState(context.state.avtarIndex)
+
+  async function handleSelection(index: String) {
+    setAvatarIndex(index)
+    await context.changeAvatar(index)
   }
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      displayMessages: true,
-      avatarIndex: this.props.user.avatarIndex,
-    }
-  }
-
-  /*componentWillMount {
-    await
-  }*/
-
-  _handleSelection = (index: String) => {
-    this.setState({avatarIndex: index})
-    this.setState({displayMessages: true})
-    this.props.changeAvatar(index)
-  }
-
-  _renderAvatar = ({item}) => (
+  const _renderAvatar = ({item}) => (
     <Avatar
       index={item.index}
-      selected={this.state.avatarIndex}
-      onPress={this._handleSelection}
+      selected={avatarIndex}
+      onPress={handleSelection}
     />
   );
 
-  _renderAvatarRow = ({item}) => (
+  const _renderAvatarRow = ({item}) => (
     <FlatList
       data={item}
       horizontal={true}
       scrollEnabled={false}
-      renderItem={this._renderAvatar}
+      renderItem={_renderAvatar}
     />
   );
 
-  render() {
-    avatarData = []
-    for (var i=0; i < avatarImages.length / 2; i++) {
-      avatarDataRow = []
-      for (var j=0; j < 2; j++) {
-        index = i * 2 + j
-        avatarDataRow.push({key: index.toString(), index: index})
-      }
-      avatarData.push(avatarDataRow)
+  let avatarData = []
+  for (let i=0; i < avatarImages.length / 2; i++) {
+    let avatarDataRow = []
+    for (let j=0; j < 2; j++) {
+      let index = i * 2 + j
+      avatarDataRow.push({key: index.toString(), index: index})
     }
-    return (
-      <View style={profileStyles.profileAvatarContainer}>
-        <FlatList
-          data={avatarData}
-          showsVerticalScrollIndicator={false}
-          renderItem={this._renderAvatarRow}
-        />
-      </View>
-    )
+    avatarData.push(avatarDataRow)
   }
+  return (
+    <View style={profileStyles.profileAvatarContainer}>
+      <FlatList
+        data={avatarData}
+        showsVerticalScrollIndicator={false}
+        renderItem={_renderAvatarRow}
+      />
+    </View>
+  )
 }
-
-const mapStateToProps = (state) => {
-  return {
-    authState: state.authState,
-    user: state.user,
-  }
-}
-const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({changeAvatar}, dispatch)
-}
-
-const ChangeAvatarContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ChangeAvatar)
-
-export default ChangeAvatarContainer

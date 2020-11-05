@@ -3,7 +3,6 @@
     "name": "pairup",
     "icon": "resources/ios/pairup_icon_ios.png",
     "version": "2.0.1",
-    "sdkVersion": "33.0.0",
     "slug": "pairup-slug",
     "ios": {
       "bundleIdentifier": "com.pairachute.pairachuteapp",
@@ -14,6 +13,10 @@
       "package": "com.pairachute.pairachute",
       "icon": "resources/android/pairup_icon_android.png",
       "versionCode": 9
-    }
+    },
+    "platforms": [
+      "ios",
+      "android"
+    ]
   }
 }
