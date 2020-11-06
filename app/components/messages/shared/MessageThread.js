@@ -3,18 +3,18 @@ import React, {
   useState
 } from 'react'
 import {
-  Button,
   FlatList,
   Image,
   KeyboardAvoidingView,
   Modal,
+  Pressable,
   ScrollView,
   Text,
   TextInput,
   TouchableHighlight,
   View
 } from 'react-native'
-import { FontAwesome } from '@expo/vector-icons'
+import { AntDesign, FontAwesome } from '@expo/vector-icons'
 import MessageBubble from './MessageBubble'
 import MessageSuggestions from './MessageSuggestions'
 import PairUpContext from '../../../config/PairUpContext'
@@ -78,10 +78,14 @@ export default function MessageThread(props) {
     return (
       <TouchableHighlight
         onPress={() => context.loadOldMessages(props.type, props.focusedThread.id, props.focusedThread.oldestMsgKey)}
+        style={{marginBottom: 30}}
         underlayColor={'rgba(255,255,255,0)'}
       >
         <View style={[styles.inverted, styles.loadOldMessageButton]}>
-          <Text>Load previous messages</Text>
+          <Text>
+            <AntDesign name='reload1' size={12}/>
+            {'  Load previous messages'}
+          </Text>
         </View>
       </TouchableHighlight>
     )
@@ -123,6 +127,21 @@ export default function MessageThread(props) {
     }
   }
 
+  function renderSendButton(isPromptResponse) {
+    const text = isPromptResponse ? promptResponseText : messageText
+    const hasText = (text !== '')
+    return (
+      <View style={styles.sendButtonContainer}>
+        <Pressable
+          disabled={!hasText}
+          style={styles.sendButton}
+          onPress={() => isPromptResponse ? sendPromptResponse() : sendMessage()}>
+          <Text style={styles.sendButtonText}>Send</Text>
+        </Pressable>
+      </View>
+    )
+  }
+
   function renderNormalTextInput() {
     return (
       <View style={[styles.flexRowEnd, styles.justifyContentCenter]}>
@@ -131,7 +150,10 @@ export default function MessageThread(props) {
           underlayColor={'rgba(255,255,255,0)'}
         >
           <View style={{marginBottom: 15, marginLeft: 20}}>
-            <FontAwesome name='quote-right' size={25} color={constants.teal}/>
+            <FontAwesome
+              name='quote-right'
+              size={25}
+              color={ showSuggestions ? constants.teal : constants.mediumGray}/>
           </View>
         </TouchableHighlight>
         <ScrollView keyboardDismissMode='on-drag' keyboardShouldPersistTaps='never' style={styles.wrapper}>
@@ -145,13 +167,7 @@ export default function MessageThread(props) {
             value={messageText}
           />
         </ScrollView>
-        <View style={{paddingBottom: 10, paddingRight: 10}}>
-          <Button
-            onPress={() => sendMessage()}
-            style={{margin: 0}}
-            title={'Send'}
-          />
-        </View>
+        {renderSendButton(false)}
       </View>
     )
   }
@@ -189,13 +205,7 @@ export default function MessageThread(props) {
             value={promptResponseText}
           />
           </ScrollView>
-          <View style={{paddingBottom: 10, paddingRight: 10}}>
-            <Button
-              onPress={() => sendPromptResponse()}
-              style={{margin: 0}}
-              title={'Send'}
-            />
-          </View>
+          {renderSendButton(true)}
         </View>
       </View>
     )
@@ -220,9 +230,22 @@ export default function MessageThread(props) {
         }
       }
     }
-    return props.type !== 'reflectionOnly'
-      ? "Paired with " + name
-      : 'Solo';
+
+    const isPaired = props.type !== 'reflectionOnly'
+    return(
+      <View style={{flex: 1, flexDirection: 'row'}}>
+        <Text style={styles.bannerText}>
+          {isPaired
+            ? "Paired with  "
+            : 'Solo'}
+        </Text>
+        {isPaired &&
+          <Text style={[styles.bannerText, styles.bannerNameText]}>
+            {name}
+          </Text>
+        }
+      </View>
+    )
   }
 
   function renderStreak() {
@@ -266,11 +289,10 @@ export default function MessageThread(props) {
     setShowSuggestions(!showSuggestions)
   }
 
-  console.log('Ct: ' + context.state.user.uid)
   return (
     props.focusedThread.id ?
       (<KeyboardAvoidingView
-        behavior={context.state.behavior}
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
         style={styles.wrapper}
         keyboardVerticalOffset={0}>
         { showEncouragement ? renderEncouragement() : null }
@@ -280,9 +302,7 @@ export default function MessageThread(props) {
           <View
             style={[styles.banner, {width: screenWidth}]}>
             <View style={styles.bannerContainer}>
-              <Text style={styles.bannerText}>
-                {renderPairName()}
-              </Text>
+              {renderPairName()}
               <View style={styles.streakContainer}>
                 <Text style={styles.streakText}>{renderStreak()}</Text>
                 <Image
@@ -290,16 +310,14 @@ export default function MessageThread(props) {
                   source={require('../../../../resources/streak.png')}/>
               </View>
             </View>
-           </View>
-           <FlatList
+          </View>
+          <FlatList
             data={props.focusedThread.messages}
             ListFooterComponent={renderLoadOldMessages}
-            //ref={(component) => this._flatList = component}
             renderItem={(data) => renderMessageBubble(data)}
             style={[styles.inverted, styles.messageListContainer]}
-           />
-         </View>
-
+          />
+        </View>
         <View>
           { focusedPrompt ? renderPromptTextInput() : renderNormalTextInput() }
           { showSuggestions && renderSuggestions() }

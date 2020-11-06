@@ -9,8 +9,6 @@ import { createStackNavigator} from '@react-navigation/stack'
 import { AntDesign } from '@expo/vector-icons'
 import PairUpContext from '../config/PairUpContext'
 
-// import MessagesTabContainer from '../components/messages/MessagesTabContainer'
-// import MessageThreadContainer from '../components/messages/MessageThreadContainer'
 import AboutScreen from '../components/about/AboutScreen'
 import ChangeAvatarScreen from '../components/profile/ChangeAvatarScreen'
 import ChangePasswordScreen from '../components/profile/ChangePasswordScreen'
@@ -75,8 +73,9 @@ function MainTabsPairedScreen () {
       })}
       initialRouteName="AboutTab"
       tabBarOptions={{
-        activeTintColor: constants.teal,
+        activeTintColor: constants.pastelBlue,
         inactiveTintColor: 'gray',
+        keyboardHidesTabBar: Platform.OS !== 'ios'
       }}
     >
       <MainTabsPaired.Screen
@@ -116,7 +115,7 @@ function MainTabsSoloScreen () {
       })}
       initialRouteName="AboutTab"
       tabBarOptions={{
-        activeTintColor: constants.teal,
+        activeTintColor: constants.pastelBlue,
         inactiveTintColor: 'gray',
       }}
     >

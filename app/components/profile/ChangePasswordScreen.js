@@ -25,7 +25,7 @@ export default function ChangePasswordScreen({navigation}) {
     setDisplayMessages(false)
   }
 
-  function verifyPasswords(newPassword) {
+  function verifyPassword(newPassword) {
     setDisplayMessages(false)
     setPasswordMatch(newPassword === password)
   }
@@ -37,6 +37,7 @@ export default function ChangePasswordScreen({navigation}) {
 
   return (
     <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : null}
       contentContainerStyle={styles.wrapper}
       resetScrollToCoords={{x: 0, y: 0}}
       style={{flex: 1}}

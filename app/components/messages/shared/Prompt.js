@@ -5,6 +5,7 @@ import React, {
 } from 'react'
 import {
   Button,
+  Image,
   KeyboardAvoidingView,
   Modal,
   Text,
@@ -14,6 +15,7 @@ import {
 } from 'react-native'
 import MaterialInitials from 'react-native-material-initials/native'
 import PairUpContext from '../../../config/PairUpContext'
+const PairUpIcon = require('../../../../resources/pairup_icon.png')
 const constants = require('../../../styles/constants.js')
 const styles = require('../../../styles/styles.js')
 
@@ -187,9 +189,7 @@ export default function Prompt(props) {
       </Modal>
       <View style={[styles.promptContainer, styles.backgroundOrange]}>
         <View style={styles.promptHeadingContainer}>
-          <MaterialInitials
-            backgroundColor={(answered) ? constants.promptDoneButtonColor : '#659EFF'}
-            color={'white'} size={25} text={'PairUp'} />
+          <Image style={[styles.messageAvatar, styles.messageAvatarImage, styles.PairUpAvatar]} source={PairUpIcon}/>
           <Text style={styles.promptHeading}>PairUp Prompt</Text>
         </View>
         <Text style={styles.promptTimestamp}>{renderPromptDate()}</Text>

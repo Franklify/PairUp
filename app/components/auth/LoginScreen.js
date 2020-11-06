@@ -5,11 +5,10 @@ import React, {
 } from 'react'
 import {
   Image,
-  Button,
   KeyboardAvoidingView,
+  Pressable,
   Text,
   TextInput,
-  TouchableHighlight,
   View
 } from 'react-native'
 
@@ -29,10 +28,10 @@ export default function LoginScreen({navigation}) {
 
   return (
     <KeyboardAvoidingView
-        contentContainerStyle={styles.wrapper}
-        behavior={Platform.OS === 'ios' ? 'padding' : null}
-        style={{backgroundColor: 'white', flex: 1}}
-      >
+      contentContainerStyle={styles.wrapper}
+      behavior={Platform.OS === 'ios' ? 'padding' : null}
+      style={{backgroundColor: 'white', flex: 1}}
+    >
       <View
         onLayout={(e) => { setScreenWidth(e.nativeEvent.layout.width) }}
         style={[styles.container, styles.authContainerColor]}
@@ -53,12 +52,13 @@ export default function LoginScreen({navigation}) {
           secureTextEntry
           style={[styles.authInput, {width: screenWidth - 20}]}
         />
-        <Button
-          disabled={context.state.isPending}
-          onPress={() => login()}
+        <Pressable
           style={styles.authButton}
-          color={'white'}
-          title={context.state.isPending ? 'Logging In...' : 'Login'}/>
+          onPress={() => login()}>
+          <Text style={styles.authButtonText}>
+            {context.state.isPending || context.state.isAuthenticated ? 'Logging In...' : 'Login'}
+          </Text>
+        </Pressable>
       </View>
     </KeyboardAvoidingView>
   )

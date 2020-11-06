@@ -152,11 +152,16 @@ const styles = StyleSheet.create({
 
   // Login/Signup and Auth
   authButton: {
-    backgroundColor: 'white',
+    backgroundColor: constants.deepBlue,
     padding: 15,
-    borderRadius: 5,
+    paddingLeft: 70,
+    paddingRight: 70,
+    borderRadius: 10,
     marginTop: 25
-
+  },
+  authButtonText: {
+    color: 'white',
+    fontSize: 20,
   },
   authErrorText: {
     color: 'red',
@@ -221,8 +226,7 @@ const styles = StyleSheet.create({
     ]
   },
   banner: {
-    height: 60,
-    backgroundColor: '#f9f9f9',
+    height: 70,
     borderWidth: 1,
     borderTopWidth: 0,
     borderColor: 'gray'
@@ -231,7 +235,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 20,
+    marginTop: 10,
     marginLeft: 10,
     marginRight: 10,
   },
@@ -239,8 +243,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     textAlign: 'center',
     color: 'black',
-    //fontWeight: 'bold',
-    fontSize: 16,
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+  bannerNameText: {
+    color: constants.pastelBlue
   },
   streakContainer: {
     flex: 1,
@@ -288,12 +295,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     margin: 10,
     padding: 10,
-    borderRadius: 5
+    borderRadius: 5,
   },
 
   // Message Bubble
   messageAvatar: {
-    marginBottom: 2
+    marginBottom: 2,
+  },
+  PairUpAvatar: {
+    borderRadius: 15,
   },
   messageAvatarImage: {
     width: 30,
@@ -372,17 +382,30 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingTop: 5,
   },
+  sendButtonContainer: {
+    paddingBottom: 10,
+    paddingRight: 10,
+  },
+  sendButton: {
+    borderRadius: 10,
+    padding: 10,
+    backgroundColor: constants.deepBlue,
+  },
+  sendButtonText: {
+    fontWeight: 'bold',
+    color: 'white',
+  },
 
   // Prompts
   promptAnswerButton: {
     alignSelf: 'center',
-    backgroundColor: constants.promptAnswerButtonColor,
+    backgroundColor: constants.deepBlue,
     padding: 10,
     borderRadius: 5
   },
   promptAnswerButtonText: {
     fontWeight: 'bold',
-    color: 'white'
+    color: 'white',
   },
   promptAnswerInput: {
     borderColor: 'gray',
