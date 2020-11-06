@@ -19,16 +19,18 @@ export function PairUpReducers (state, action) {
         isAuthenticated: true,
         isPending: false,
         // User
-        displayName: action.user.displayName,
-        email: action.user.email,
-        emailVerified: action.user.emailVerified,
-        avatarIndex: action.user.avatarIndex,
-        providerData: action.user.providerData,
-        refreshToken: action.user.refreshToken,
-        reflectionType: action.user.reflectionType,
-        showAbout: action.user.showAbout,
-        threads: action.user.threads,
-        uid: action.user.uid
+        user: {...state.user,
+          displayName: action.user.displayName,
+          email: action.user.email,
+          emailVerified: action.user.emailVerified,
+          avatarIndex: action.user.avatarIndex,
+          providerData: action.user.providerData,
+          refreshToken: action.user.refreshToken,
+          reflectionType: action.user.reflectionType,
+          showAbout: action.user.showAbout,
+          threads: action.user.threads,
+          uid: action.user.uid
+        }
       }
     case types.LOGIN_FAILURE:
     case types.SIGNUP_FAILURE:
@@ -54,7 +56,9 @@ export function PairUpReducers (state, action) {
       return {...state,
         changeAvatarSuccessMessage: action.successMessage,
         changeAvatarFailureMessage: '',
-        avatarIndex: action.avatarIndex
+        user: {...state.user,
+          avatarIndex: action.avatarIndex
+        }
       }
     case types.CHANGE_AVATAR_FAILURE:
       return {...state,
@@ -86,60 +90,79 @@ export function PairUpReducers (state, action) {
     // Chat Only Thread
     case types.INITIAL_LOAD_CHAT_ONLY_MESSAGES_SUCCESS:
       return {...state,
-        id: action.focusedThread.id,
-        isReady: true,
-        title: action.focusedThread.title,
-        users: action.focusedThread.users,
-        messages: action.focusedThread.messages,
-        oldestMsgKey: action.focusedThread.oldestMsgKey
+        chatOnlyThread: {...state.chatOnlyThread,
+          id: action.focusedThread.id,
+          isReady: true,
+          title: action.focusedThread.title,
+          users: action.focusedThread.users,
+          messages: action.focusedThread.messages,
+          oldestMsgKey: action.focusedThread.oldestMsgKey
+        }
       }
     case types.LOAD_NEW_CHAT_ONLY_MESSAGES_SUCCESS:
       return {...state,
-        messages: state.messages.length > 0 && state.messages[0].key !== action.newMessage[0].key ? action.newMessage.concat(state.messages) : state.messages
+        chatOnlyThread: {...state.chatOnlyThread,
+          messages: state.chatOnlyThread.messages.length > 0 && state.chatOnlyThread.messages[0].key !== action.newMessage[0].key ? action.newMessage.concat(state.chatOnlyThread.messages) : state.chatOnlyThread.messages
+        }
       }
     case types.LOAD_OLD_CHAT_ONLY_MESSAGES_SUCCESS:
       return {...state,
-        messages: state.messages.concat(action.oldMessages.messages),
-        oldestMsgKey: action.oldMessages.oldestMsgKey
+        chatOnlyThread: {...state.chatOnlyThread,
+          messages: state.chatOnlyThread.messages.concat(action.oldMessages.messages),
+          oldestMsgKey: action.oldMessages.oldestMsgKey
+        }
       }
     // Reflection Only Thread
     case types.INITIAL_LOAD_REFLECTION_ONLY_MESSAGES_SUCCESS:
       return {...state,
-        id: action.focusedThread.id,
-        isReady: true,
-        title: action.focusedThread.title,
-        users: action.focusedThread.users,
-        messages: action.focusedThread.messages,
-        oldestMsgKey: action.focusedThread.oldestMsgKey
+        reflectionOnlyThread: {...state.reflectionOnlyThread,
+          id: action.focusedThread.id,
+          isReady: true,
+          title: action.focusedThread.title,
+          users: action.focusedThread.users,
+          messages: action.focusedThread.messages,
+          oldestMsgKey: action.focusedThread.oldestMsgKey
+        }
       }
     case types.LOAD_NEW_REFLECTION_ONLY_MESSAGES_SUCCESS:
       return {...state,
-        messages: state.messages.length > 0 && state.messages[0].key !== action.newMessage[0].key ? action.newMessage.concat(state.messages) : state.messages
+        reflectionOnlyThread: {...state.reflectionOnlyThread,
+          messages: state.reflectionOnlyThread.messages.length > 0 && state.reflectionOnlyThread.messages[0].key !== action.newMessage[0].key ? action.newMessage.concat(state.reflectionOnlyThread.messages) : state.reflectionOnlyThread.messages
+        }
       }
     case types.LOAD_OLD_REFLECTION_ONLY_MESSAGES_SUCCESS:
       return {...state,
-        messages: state.messages.concat(action.oldMessages.messages),
-        oldestMsgKey: action.oldMessages.oldestMsgKey
+        reflectionOnlyThread: {...state.reflectionOnlyThread,
+          messages: state.reflectionOnlyThread.messages.concat(action.oldMessages.messages),
+          oldestMsgKey: action.oldMessages.oldestMsgKey
+        }
       }
     // Reflection and Chat Thread
     case types.INITIAL_LOAD_REFLECTION_AND_CHAT_MESSAGES_SUCCESS:
       return {...state,
-        id: action.focusedThread.id,
-        isReady: true,
-        title: action.focusedThread.title,
-        users: action.focusedThread.users,
-        messages: action.focusedThread.messages,
-        oldestMsgKey: action.focusedThread.oldestMsgKey
+        reflectionAndChatThread: {...state.reflectionAndChatThread,
+          id: action.focusedThread.id,
+          isReady: true,
+          title: action.focusedThread.title,
+          users: action.focusedThread.users,
+          messages: action.focusedThread.messages,
+          oldestMsgKey: action.focusedThread.oldestMsgKey
+        }
       }
     case types.LOAD_NEW_REFLECTION_AND_CHAT_MESSAGES_SUCCESS:
       return {...state,
-        messages: state.messages.length > 0 && state.messages[0].key !== action.newMessage[0].key ? action.newMessage.concat(state.messages) : state.messages
+        reflectionAndChatThread: {...state.reflectionAndChatThread,
+          messages: state.reflectionAndChatThread.messages.length > 0 && state.reflectionAndChatThread.messages[0].key !== action.newMessage[0].key ? action.newMessage.concat(state.reflectionAndChatThread.messages) : state.reflectionAndChatThread.messages
+        }
       }
     case types.LOAD_OLD_REFLECTION_AND_CHAT_MESSAGES_SUCCESS:
       return {...state,
-        messages: state.messages.concat(action.oldMessages.messages),
-        oldestMsgKey: action.oldMessages.oldestMsgKey
+        reflectionAndChatThread: {...state.reflectionAndChatThread,
+          messages: state.reflectionAndChatThread.messages.concat(action.oldMessages.messages),
+          oldestMsgKey: action.oldMessages.oldestMsgKey
+        }
       }
+
     default:
       return state
   }

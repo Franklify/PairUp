@@ -1,4 +1,7 @@
-import React, {Component} from 'react'
+import React, {
+  useEffect,
+  useState
+} from 'react'
 import {
   Image,
   Text,
@@ -50,116 +53,101 @@ const avatarImages = [
   require('../../../../resources/avatars/avatar_white_long_blond_glasses.png')
 ]
 
-class MessageBubble extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      bubblePressed: false
-    }
-    console.log("bubbles")
-    console.log(this.props.users)
-    this.sender = this.props.users[this.props.message.senderId]
-    // state variables
-    this.isOwnMessage = this.props.message.senderId === this.props.senderId
-    this.isSameSenderAsNext = this.props.message.senderId === this.props.message.nextSenderId
-    this.isSameSenderAsPrev = this.props.message.senderId === this.props.message.prevSenderId
+export default function MessageBubble(props) {
+  const [bubblePressed, setBubblePressed] = useState(false)
 
-    // variables calculated from state
-    this.bubbleStyle = this.isOwnMessage ? styles.sentMessage : styles.receivedMessage
-    this.bubbleTextStyle = this.isOwnMessage ? styles.sentMessageText : styles.receivedMessageText
-    this.timestamp = this._parseTimestamp()
+  const sender = props.users[props.message.senderId]
+  // state variables
+  const isOwnMessage = props.message.senderId === props.senderId
+  const isSameSenderAsNext = props.message.senderId === props.message.nextSenderId
+  const isSameSenderAsPrev = props.message.senderId === props.message.prevSenderId
 
-    // components
-    this.date = this._renderDate()
-    this.isSameDayAsNext = !this._notSameDayAsNext()
-    console.log("Infoooo")
-    console.log(this.props.users)
-    console.log(parseInt(this.sender.avatarIndex))
-    this.avatarImage = (this.sender.avatarIndex && this.sender.avatarIndex !== "None")
-        ? avatarImages[parseInt(this.sender.avatarIndex)]
-        : avatarNeutral
-    this.avatar = !this.isOwnMessage && (!this.isSameSenderAsNext || (this.isSameSenderAsNext && !this.isSameDayAsNext))
-      ? (<Image style={[styles.messageAvatar, styles.messageAvatarImage]} source={this.avatarImage}/>)
-      // ? null
-      : null
+  // variables calculated from state
+  const bubbleStyle = isOwnMessage ? styles.sentMessage : styles.receivedMessage
+  const bubbleTextStyle = isOwnMessage ? styles.sentMessageText : styles.receivedMessageText
+  let timestamp = parseTimestamp()
 
-    this.senderName = !this.isOwnMessage && (!this.isSameSenderAsPrev || this.date !== null)
-     ? (<Text style={styles.receivedMessageSender}>{this.sender.name}</Text>)
-     : null
+  // components
+  let date = renderDate()
+  let isSameDayAsNext = !notSameDayAsNext()
+  const avatarImage = (sender.avatarIndex && sender.avatarIndex !== "None")
+      ? avatarImages[parseInt(sender.avatarIndex)]
+      : avatarNeutral
+  const avatar = !isOwnMessage && (!isSameSenderAsNext || (isSameSenderAsNext && !isSameDayAsNext))
+    ? (<Image style={[styles.messageAvatar, styles.messageAvatarImage]} source={avatarImage}/>)
+    // ? null
+    : null
 
-    this.wrapperStyle = !this.isOwnMessage ? !this.isSameSenderAsNext || this.avatar !== null ? [styles.receivedMsgBubbleWrapper, styles.receivedMsgWithAvatar] : [styles.receivedMsgBubbleWrapper] : styles.sentMsgBubbleWrapper
-  }
+  const senderName = !isOwnMessage && (!isSameSenderAsPrev || date !== null)
+   ? (<Text style={styles.receivedMessageSender}>{sender.name}</Text>)
+   : null
 
-  componentWillReceiveProps (nextProps) {
-    if (this.props.message !== nextProps.message) {
-      this.timestamp = () => this._parseTimestamp()
-      this.date = () => this._renderDate()
-      this.isSameDayAsNext = () => this._sameDayAsNext()
-    }
-  }
+  const wrapperStyle = !isOwnMessage ? !isSameSenderAsNext || avatar !== null ? [styles.receivedMsgBubbleWrapper, styles.receivedMsgWithAvatar] : [styles.receivedMsgBubbleWrapper] : styles.sentMsgBubbleWrapper
 
-  _parseTimestamp () {
-    var time = new Date(this.props.message.timestamp)
-    // console.log('parsing timestamp', time)
+
+  useEffect(() => {
+    timestamp = () => parseTimestamp()
+    date = () => renderDate()
+    isSameDayAsNext = () => sameDayAsNext()
+  }, [props.message]);
+
+  function parseTimestamp() {
+    let time = new Date(props.message.timestamp)
     return time.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
   }
 
-  _renderDate () {
-    var currDate = new Date(this.props.message.timestamp)
-    var prevDate = new Date(this.props.message.prevMessageTimestamp)
-    return this.props.message.timestamp - this.props.message.prevMessageTimestamp > 86400000 || currDate.getDay() !== prevDate.getDay()
+  function renderDate() {
+    let currDate = new Date(props.message.timestamp)
+    const prevDate = new Date(props.message.prevMessageTimestamp)
+    return props.message.timestamp - props.message.prevMessageTimestamp > 86400000 || currDate.getDay() !== prevDate.getDay()
       ? <Text style={styles.messageDate}>{currDate.toLocaleDateString([], {weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'}).toUpperCase()}</Text>
       : null
   }
 
-  _renderTimestampLeft () {
-    return this.isOwnMessage
+  function renderTimestampLeft() {
+    return isOwnMessage
       ? (<View>
-        <Text style={styles.messageTimestamp}>{this._parseTimestamp()}</Text>
+        <Text style={styles.messageTimestamp}>{parseTimestamp()}</Text>
       </View>)
       : null
   }
 
-  _renderTimestampRight () {
-    return !this.isOwnMessage
-      ? <View><Text style={styles.messageTimestamp}>{this._parseTimestamp()}</Text></View>
+  function renderTimestampRight() {
+    return !isOwnMessage
+      ? <View><Text style={styles.messageTimestamp}>{parseTimestamp()}</Text></View>
       : null
   }
 
-  _notSameDayAsNext () {
-    var currDate = new Date(this.props.message.timestamp)
-    var nextDate = new Date(this.props.message.nextMessageTimestamp)
-    return nextDate !== null && (this.props.message.nextMessageTimestamp - this.props.message.timestamp > 86400000 || currDate.getDay() !== nextDate.getDay())
+  function notSameDayAsNext() {
+    const currDate = new Date(props.message.timestamp)
+    const nextDate = new Date(props.message.nextMessageTimestamp)
+    return nextDate !== null && (props.message.nextMessageTimestamp - props.message.timestamp > 86400000 || currDate.getDay() !== nextDate.getDay())
   }
 
-  _toggleBubblePress () {
-    this.setState({bubblePressed: !this.state.bubblePressed})
+  function toggleBubblePress() {
+    setBubblePressed(!bubblePressed)
   }
 
-  render () {
-    return (
-      <View>
-        {this.date}
-        {this.senderName}
-        <View style={this.wrapperStyle}>
-          <View>
-            <View style={styles.flexRowEnd}>
-              {this.avatar}
-              <TouchableHighlight
-                onPress={() => this._toggleBubblePress()}
-                underlayColor={'rgba(0,0,0,0)'}
-              >
-                <View style={[styles.messageBubble, this.bubbleStyle]}>
-                  <Text style={this.bubbleTextStyle}>{this.props.message.message}</Text>
-                </View>
-              </TouchableHighlight>
-            </View>
-            {this.state.bubblePressed ? <Text style={styles.messageTimestamp}>{this.timestamp}</Text> : null}
+  return (
+    <View>
+      {date}
+      {senderName}
+      <View style={wrapperStyle}>
+        <View>
+          <View style={styles.flexRowEnd}>
+            {avatar}
+            <TouchableHighlight
+              onPress={() => toggleBubblePress()}
+              underlayColor={'rgba(0,0,0,0)'}
+            >
+              <View style={[styles.messageBubble, bubbleStyle]}>
+                <Text style={bubbleTextStyle}>{props.message.message}</Text>
+              </View>
+            </TouchableHighlight>
           </View>
+          {bubblePressed ? <Text style={styles.messageTimestamp}>{timestamp}</Text> : null}
         </View>
       </View>
-    )
-  }
+    </View>
+  )
 }
-
-module.exports = MessageBubble

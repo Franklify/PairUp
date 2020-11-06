@@ -13,7 +13,6 @@ export function switchSignupToLogin () {
 }
 
 export function loginAttempt () {
-  console.log('LOGIN ATTEMPT SO CLOSE')
   return {
     type: types.LOGIN_ATTEMPT
   }

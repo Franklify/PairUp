@@ -21,6 +21,7 @@ const {
 const PairUpApp = () => {
   const [state, dispatch] = useReducer(PairUpReducers, InitialState)
 
+  // Auth
   async function login(email, password) {
     try {
       dispatch(ActionCreators.ActionCreators.loginAttempt())
@@ -44,15 +45,7 @@ const PairUpApp = () => {
         threads: userInfo.threads,
         uid: responseUser.uid
       }
-      //console.log('fb user: ' + user)
       dispatch(ActionCreators.ActionCreators.loginSuccess(user))
-      if (userInfo.reflectionType === 'paired') {
-        console.log('Going PAIRED')
-        CommonActions.navigate({name: 'PairedHome'})
-      } else {
-        console.log('Going SOLO')
-        CommonActions.navigate({name: 'SoloHome'})
-      }
     } catch (error) {
       console.log('could not log in: ' + error.message)
       dispatch(ActionCreators.ActionCreators.loginFailure(error.message))
@@ -185,6 +178,236 @@ const PairUpApp = () => {
     }
   }
 
+  // Messages
+  async function loadMessages (type, threadId) {
+    try {
+      // load existing messages
+      dispatch(ActionCreators.ActionCreators.initialLoadMessagesAttempt())
+
+      let threadInfo = (await db.ref('/threads/' + threadId).once('value')).val()
+      const msgRef = db.ref('/messages/' + threadId).limitToLast(20)
+      const msgObject = await msgRef.once('value')
+
+      let msgs = []
+      if (msgObject.val() !== null) {
+        msgs = Object.keys(msgObject.val()).map(function (key) {
+          return Object.assign({}, msgObject.val()[key], {key: key})
+        })
+      }
+
+      let users = {}
+      for (let userId in threadInfo.users) {
+        const name = threadInfo.users[userId]
+        const avatar = await db.ref('/users/' + userId + '/avatarIndex').once('value')
+        const avatarIndex = avatar.val()
+        users[userId] = {'name': name, 'avatarIndex': avatarIndex}
+      }
+
+      const focusedThread = {
+        id: threadId,
+        oldestMsgKey: msgs.length > 0 ? msgs[0].key : null,
+        messages: msgs.reverse(),
+        users: users,
+      }
+
+      if (type === 'chatOnly') {
+        dispatch(ActionCreators.ActionCreators.initialLoadChatOnlyMessagesSuccess(focusedThread))
+      } else if (type === 'reflectionOnly') {
+        dispatch(ActionCreators.ActionCreators.initialLoadReflectionOnlyMessagesSuccess(focusedThread))
+      } else {
+        dispatch(ActionCreators.ActionCreators.initialLoadReflectionAndChatMessagesSuccess(focusedThread))
+      }
+
+      // listen for new messages
+      try {
+        dispatch(ActionCreators.ActionCreators.loadNewMessagesAttempt())
+        let newMsgRef = db.ref('/messages/' + threadId).limitToLast(1)
+        newMsgRef.on('child_added', function (data) {
+          const newMessage = [Object.assign({}, data.val(), {key: data.key})]
+          if (type === 'chatOnly') {
+            dispatch(ActionCreators.ActionCreators.loadNewChatOnlyMessagesSuccess(newMessage))
+          } else if (type === 'reflectionOnly') {
+            dispatch(ActionCreators.ActionCreators.loadNewReflectionOnlyMessagesSuccess(newMessage))
+          } else {
+            dispatch(ActionCreators.ActionCreators.loadNewReflectionAndChatMessagesSuccess(newMessage))
+          }
+        })
+      } catch (err) {
+        console.log('loadNewMessages error', err)
+        dispatch(ActionCreators.ActionCreators.loadNewMessagesFailure())
+      }
+    } catch (err) {
+      console.log('loadMessages error', err)
+      dispatch(ActionCreators.ActionCreators.intiailLoadMessagesFailure())
+    }
+  }
+
+  async function loadOldMessages (type, threadId, oldestMsgKey) {
+    try {
+      dispatch(ActionCreators.ActionCreators.loadOldMessagesAttempt())
+      const threadRef = db.ref('/messages/' + threadId).orderByKey().endAt(oldestMsgKey).limitToLast(21)
+      const msgObject = await threadRef.once('value')
+      let msgs = Object.keys(msgObject.val()).map(function (key) {
+        return Object.assign({}, msgObject.val()[key], {key: key})
+      })
+      msgs.pop()
+      const oldMessages = {
+        oldestMsgKey: msgs.length > 0 ? msgs[0].key : null,
+        messages: msgs.reverse()
+      }
+      if (type === 'chatOnly') {
+        dispatch(ActionCreators.ActionCreators.loadOldChatOnlyMessagesSuccess(oldMessages))
+      } else if (type === 'reflectionOnly') {
+        dispatch(ActionCreators.ActionCreators.loadOldReflectionOnlyMessagesSuccess(oldMessages))
+      } else {
+        dispatch(ActionCreators.ActionCreators.loadOldReflectionAndChatMessagesSuccess(oldMessages))
+      }
+    } catch (err) {
+      console.log(err)
+      dispatch(ActionCreators.ActionCreators.loadOldMessagesFailure())
+    }
+  }
+
+  async function loadThreadList () {
+    try {
+      dispatch(ActionCreators.ActionCreators.loadThreadListAttempt())
+
+      const uid = fb.auth().currentUser.uid
+      let userThreadsRef = db.ref('/users/' + uid + '/threads')
+      let threads = []
+
+      userThreadsRef.on('value', async function (snapshot) {
+        const userThreads = snapshot.val()
+        for (let id in userThreads) {
+          const threadRefString = '/threads/' + id.toString()
+          const info = await db.ref(threadRefString).once('value')
+          if (info.val().title) {
+            let title = info.val().title
+          } else {
+            let names = []
+            let users = {}
+            const userids = Object.keys(info.val().users)
+            for (var i in userids) {
+              const firstName = await db.ref('/users/' + userids[i] + '/firstName').once('value')
+              const lastName = await db.ref('/users/' + userids[i] + '/lastName').once('value')
+              const name = firstName.val() + ' ' + lastName.val()
+              const avatar = await db.ref('/users/' + userids[i] + '/avatarIndex').once('value')
+              const avatarIndex = avatar.val()
+              users[userids[i]] = {'name': name, 'avatarIndex': avatarIndex}
+              if (userids[i] !== uid) names.push(name)
+            }
+            title = names.join(', ')
+          }
+          threads.push({
+            id: id,
+            users: users,
+            lastMessage: info.val().last_message,
+            title: title
+          })
+        }
+        dispatch(ActionCreators.ActionCreators.loadThreadListSuccess(threads))
+      })
+    } catch (err) {
+      console.log(err)
+      dispatch(ActionCreators.ActionCreators.loadThreadListFailure())
+    }
+  }
+
+  async function sendMessage (message, senderId, senderDisplayName, threadId) {
+    try {
+      dispatch(ActionCreators.ActionCreators.sendMessageAttempt())
+      let updates = {}
+
+      const prevMsg = await db.ref('/messages/' + threadId).limitToLast(1).once('value')
+
+      let prevMsgKey = null
+      let updatedPrevMsg = {
+        senderId: null,
+        timestamp: null,
+      }
+      if (prevMsg.val() !== null) {
+        prevMsgKey = Object.keys(prevMsg.val())[0]
+        updatedPrevMsg = Object.assign({}, prevMsg.val()[prevMsgKey], {
+          nextSenderId: senderId,
+          nextMessageTimestamp: Date.now()
+        })
+        updates['/messages/' + threadId + '/' + prevMsgKey] = updatedPrevMsg
+      }
+
+      const newMsgKey = db.ref('/messages').push().key
+      const newMsgData = {
+        message: message,
+        senderId: senderId,
+        senderDisplayName: senderDisplayName,
+        timestamp: Date.now(),
+        prevSenderId: updatedPrevMsg.senderId,
+        prevMessageTimestamp: updatedPrevMsg.timestamp
+      }
+
+      updates['/messages/' + threadId + '/' + newMsgKey] = newMsgData
+      updates['/threads/' + threadId + '/last_message'] = newMsgData
+
+      await db.ref().update(updates)
+      dispatch(ActionCreators.ActionCreators.sendMessageSuccess())
+    } catch (err) {
+      console.log('send message error', err.message)
+      dispatch(ActionCreators.ActionCreators.sendMessageFailure())
+    }
+  }
+
+  async function submitPromptResponse (prompt, response, senderId, threadId) {
+    try {
+      dispatch(ActionCreators.ActionCreators.submitPromptResponseAttempt())
+
+      console.log('inputs', prompt, response, senderId, threadId)
+
+      const prevMsg = await db.ref('/messages/' + threadId).limitToLast(1).once('value')
+      const prevMsgKey = Object.keys(prevMsg.val())[0]
+      const updatedPrevMsg = Object.assign({}, prevMsg.val()[prevMsgKey], {
+        nextSenderId: 'promptResponse',
+        nextMessageTimestamp: Date.now()
+      })
+
+      const promptInfo = {
+        key: prompt.key,
+        message: prompt.message,
+      }
+
+      let responseInfo = {
+        senderId: senderId,
+      }
+      responseInfo['response'] = response
+
+      const promptObj = await db.ref('/messages/' + threadId + '/' + prompt.key).once('value')
+      let promptUpdate = {}
+      promptUpdate[senderId] = responseInfo.response
+      const updatedPrompt = Object.assign({}, promptObj.val(), {
+        responses: promptObj.val().responses ? Object.assign({}, promptObj.val().responses, promptUpdate) : promptUpdate
+      })
+
+      const newMsgKey = db.ref('/messages').push().key
+      const newMsgData = {
+        type: 'promptResponse',
+        senderId: 'promptResponse',
+        promptInfo: promptInfo,
+        responseInfo: responseInfo,
+        timestamp: Date.now(),
+        prevSenderId: updatedPrevMsg.senderId,
+        prevMessageTimestamp: updatedPrevMsg.timestamp
+      }
+
+      let updates = {}
+      updates['/messages/' + threadId + '/' + prevMsgKey] = updatedPrevMsg
+      updates['/messages/' + threadId + '/' + newMsgKey] = newMsgData
+      updates['/messages/' + threadId + '/' + prompt.key] = updatedPrompt
+
+      await db.ref().update(updates)
+    } catch (err) {
+      console.log(err)
+      dispatch(ActionCreators.ActionCreators.submitPromptResponseFailure())
+    }
+  }
+
   const value = {
     state,
     login,
@@ -193,7 +416,12 @@ const PairUpApp = () => {
     logout,
     switchLoginToSignup,
     changeAvatar,
-    changePassword
+    changePassword,
+    loadMessages,
+    loadOldMessages,
+    loadThreadList,
+    sendMessage,
+    submitPromptResponse
   }
 
   return (

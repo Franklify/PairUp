@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     ]
   },
   banner: {
-    height: 50,
+    height: 60,
     backgroundColor: '#f9f9f9',
     borderWidth: 1,
     borderTopWidth: 0,
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 10,
+    marginTop: 20,
     marginLeft: 10,
     marginRight: 10,
   },

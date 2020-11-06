@@ -64,9 +64,12 @@ export default function ProfileScreen({navigation}) {
   const context = useContext(PairUpContext)
 
   function getAvatar() {
-    const avatarIndex = context.state.avatarIndex
-    return (avatarIndex && avatarIndex !== "None")
-        ? avatarImages[avatarIndex] : avatarNeutral
+    const user = context.state.user
+    if (user) {
+      const avatarIndex = user.avatarIndex
+      return (avatarIndex && avatarIndex !== "None")
+          ? avatarImages[avatarIndex] : avatarNeutral
+    }
   }
 
   return (
@@ -75,10 +78,12 @@ export default function ProfileScreen({navigation}) {
         style={{width: 75, height: 75}}
         source={getAvatar()}
       />
-      {context.state.displayName &&
-          <Text style={styles.profileText}>{context.state.displayName}</Text>
-        }
-      <Text style={[styles.profileText, styles.profileEmail]}>{context.state.email}</Text>
+      {context.state.user && context.state.user.displayName &&
+        <Text style={styles.profileText}>{context.state.user.displayName}</Text>
+      }
+      {context.state.user && context.state.user.email &&
+        <Text style={[styles.profileText, styles.profileEmail]}>{context.state.user.email}</Text>
+      }
       <Pressable
         style={styles.profileButton}
         onPress={() => navigation.navigate('ChangeAvatar')}>

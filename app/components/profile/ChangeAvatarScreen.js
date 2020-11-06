@@ -58,7 +58,7 @@ const avatarImages = [
 
 export default function ChangeAvatarScreen({navigation}) {
   const context = useContext(PairUpContext)
-  const [avatarIndex, setAvatarIndex] = useState(context.state.avtarIndex)
+  const [avatarIndex, setAvatarIndex] = useState(context.state.user.avtarIndex)
 
   async function handleSelection(index: String) {
     setAvatarIndex(index)

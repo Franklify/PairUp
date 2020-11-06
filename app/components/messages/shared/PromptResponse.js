@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import {
   Button,
   KeyboardAvoidingView,
@@ -13,46 +13,41 @@ import MessageBubble from './MessageBubble'
 const constants = require('../../../styles/constants.js')
 const styles = require('../../../styles/styles.js')
 
-class PromptResponse extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      behavior: 'padding',
-      modalVisible: false,
-      pressedBubbles: {},
-      pressedResponses: {},
-      promptAnswerText: ''
-    }
+export default function PromptResponse(props) {
+  // Remove?
+  const [modalVisible, setModalVisible] = useState(false)
+  const [pressedBubbles, setPressedBubbles] = useState({})
+  const [pressedResponses, setPressedResponses] = useState({})
+  //
+  const [promptAnswerText, setPromptAnswerText] = useState('')
 
-    this.prompt = this.props.data.promptInfo.message.length > 100 ? '"' + this.props.data.promptInfo.message.substr(0, 100) + '..."' : '"' + this.props.data.promptInfo.message + '"'
-    this.senderName = this.props.users[this.props.data.responseInfo.senderId].name
+  const prompt = props.data.promptInfo.message.length > 100 ? '"' + props.data.promptInfo.message.substr(0, 100) + '..."' : '"' + props.data.promptInfo.message + '"'
+  const senderName = props.users[props.data.responseInfo.senderId].name
+
+  // Remove?
+  function changeModalVisibility(visible) {
+    setModalVisible(visible)
   }
 
-  _changeModalVisibility (visible) {
-    this.setState({modalVisible: visible})
-  }
-
-  _displayResponse () {
-    var message = Object.assign({}, this.props.data, {
-      message: this.props.data.responseInfo.response,
-      senderId: this.props.data.responseInfo.senderId,
-      nextSenderId: this.props.data.nextSenderId,
-      prevSenderId: this.props.data.prevSenderId,
-      timestamp: this.props.data.timestamp,
-      prevMessageTimestamp: this.props.data.prevMessageTimestamp,
-      nextMessageTimestamp: this.props.data.nextMessageTimestamp,
-
+  function displayResponse() {
+    const message = Object.assign({}, props.data, {
+      message: props.data.responseInfo.response,
+      senderId: props.data.responseInfo.senderId,
+      nextSenderId: props.data.nextSenderId,
+      prevSenderId: props.data.prevSenderId,
+      timestamp: props.data.timestamp,
+      prevMessageTimestamp: props.data.prevMessageTimestamp,
+      nextMessageTimestamp: props.data.nextMessageTimestamp,
     })
-    // console.log('displaying response', message)
-    return(<MessageBubble users={this.props.users} senderId={this.props.senderId} message={message}/>)
+    return(<MessageBubble users={props.users} senderId={props.senderId} message={message}/>)
   }
 
-  _getResponsesOrTextInput () {
-    if (this.props.data.promptInfo.responseOptions) {
+  function getResponsesOrTextInput() {
+    if (props.data.promptInfo.responseOptions) {
       return (
         <View style={styles.flexColumnCenter}>
           <Text>ided some responses, wont show input</Text>
-          {this._promptResponses()}
+          {promptResponses()}
         </View>
       )
     }
@@ -60,21 +55,21 @@ class PromptResponse extends Component {
       <View style={styles.flexRowCenter}>
         <TextInput
           multiline
-          onChangeText={(promptAnswerText) => this.setState({promptAnswerText})}
+          onChangeText={(promptAnswerText) => setPromptAnswerText(promptAnswerText)}
           placeholder={'Write your response here'}
           style={styles.promptAnswerInput}
-          value={this.state.promptAnswerText}
+          value={promptAnswerText}
         />
       </View>
     )
   }
 
-  _promptResponses () {
-    if (this.props.data.promptInfo.responseOptions) {
-      return Object.entries(this.props.data.promptInfo.responseOptions).map(item =>
-        (<View key={item[0]} style={[styles.promptResponseItem, this.state.pressedBubbles[item[0]] === true ? styles.responsePressed : null]}>
+  function promptResponses() {
+    if (props.data.promptInfo.responseOptions) {
+      return Object.entries(props.data.promptInfo.responseOptions).map(item =>
+        (<View key={item[0]} style={[styles.promptResponseItem, pressedBubbles[item[0]] === true ? styles.responsePressed : null]}>
           <TouchableHighlight
-            onPress={() => this._toggleBubblePress(item[0], item[1])}
+            onPress={() => toggleBubblePress(item[0], item[1])}
             underlayColor={'rgba(255,255,255,0)'}
           >
             <Text>{item[1]}</Text>
@@ -85,18 +80,14 @@ class PromptResponse extends Component {
     return null
   }
 
-  render () {
-    return (
-      <View>
-        <View style={styles.promptResponseContainer}>
-          <Text style={styles.promptResponseHeader}>
-            <Text style={{fontWeight: 'bold'}}>{this.senderName}</Text> responded to the prompt {this.prompt}
-          </Text>
-          {this._displayResponse()}
-        </View>
+  return (
+    <View>
+      <View style={styles.promptResponseContainer}>
+        <Text style={styles.promptResponseHeader}>
+          <Text style={{fontWeight: 'bold'}}>{senderName}</Text> responded to the prompt {prompt}
+        </Text>
+        {displayResponse()}
       </View>
-    )
-  }
+    </View>
+  )
 }
-
-module.exports = PromptResponse

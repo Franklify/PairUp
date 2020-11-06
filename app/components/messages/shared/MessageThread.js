@@ -1,4 +1,7 @@
-import React, {Component} from 'react'
+import React, {
+  useContext,
+  useState
+} from 'react'
 import {
   Button,
   FlatList,
@@ -14,68 +17,67 @@ import {
 import { FontAwesome } from '@expo/vector-icons'
 import MessageBubble from './MessageBubble'
 import MessageSuggestions from './MessageSuggestions'
+import PairUpContext from '../../../config/PairUpContext'
 import Prompt from './Prompt'
 import PromptResponse from './PromptResponse'
+import UnpairedScreen from './UnpairedScreen'
 const styles = require('../../../styles/styles.js')
 const constants = require('../../../styles/constants.js')
 
-class MessageThread extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      behavior: 'padding',
-      data: [],
-      height: 0,
-      focusedPrompt: null,
-      messageText: '',
-      promptResponseText: '',
-      screenWidth: 0,
-      showSuggestions: false,
-      showEncouragement: false,
+export default function MessageThread(props) {
+  const context = useContext(PairUpContext)
+  const [data, setData] = useState([])
+  const [height, setHeight] = useState(0)
+  const [focusedPrompt, setFocusedPrompt] = useState(null)
+  const [messageText, setMessageText] = useState('')
+  const [promptResponseText, setPromptResponseText] = useState('')
+  const [screenWidth, setScreenWidth] = useState(0)
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [showEncouragement, setShowEncouragement] = useState(false)
+  const [encouragementHasShown, setEncouragementHasShown] = useState(false)
+
+  function handlePickSuggestion(message) {
+    setMessageText(message)
+  }
+
+  function updateFocusedPrompt(prompt) {
+    setFocusedPrompt(prompt)
+  }
+
+  function sendMessage() {
+    context.sendMessage(messageText, props.user.uid, context.state.user.displayName, props.focusedThread.id)
+    if (focusedPrompt) {
+      displayEncouragement()
+    }
+    setMessageText('')
+  }
+
+  function sendPromptResponse() {
+    context.submitPromptResponse(focusedPrompt, promptResponseText, props.user.uid, props.focusedThread.id)
+    displayEncouragement()
+    setPromptResponseText('')
+  }
+
+  function displayEncouragement() {
+    if (!encouragementHasShown) {
+      setShowEncouragement(true)
     }
   }
 
-  static navigationOptions = ({ navigation, screenProps }) => ({
-    title: navigation.state.params.title
-  })
-
-  handlePickSuggestion = (messageText) => {
-    this.setState({ messageText })
+  function hideEncouragement() {
+    setEncouragementHasShown(true)
+    setShowEncouragement(false)
   }
 
-  updateFocusedPrompt = (prompt) => {
-    this.setState({ focusedPrompt: prompt })
+  function updateInputHeight(inputHeight) {
+    const maxInputHeight = inputHeight > 125 ? 125 : inputHeight
+    setHeight(maxInputHeight)
   }
 
-  _sendMessage () {
-    this.props.sendMessage(this.state.messageText, this.props.user.uid, this.props.user.displayName, this.props.focusedThread.id)
-    if (this.state.focusedPrompt) {
-      this._toggleEncouragement()
-    }
-    this.setState({ messageText: '' })
-  }
-
-  _sendPromptResponse () {
-    this.props.submitPromptResponse(this.state.focusedPrompt, this.state.promptResponseText, this.props.user.uid, this.props.focusedThread.id)
-    this._toggleEncouragement()
-    this.setState({ promptResponseText: '' })
-  }
-
-  _toggleEncouragement() {
-    this.setState({ showEncouragement: !this.state.showEncouragement })
-  }
-
-  _updateInputHeight = (height) => {
-    height = height > 125 ? 125 : height
-    this.setState({
-      height
-    });
-  }
-
-  _renderLoadOldMessages = () => {
+  function renderLoadOldMessages() {
     return (
       <TouchableHighlight
-        onPress={() => this.props.loadOldMessages(this.props.type, this.props.focusedThread.id, this.props.focusedThread.oldestMsgKey)}
+        onPress={() => context.loadOldMessages(props.type, props.focusedThread.id, props.focusedThread.oldestMsgKey)}
         underlayColor={'rgba(255,255,255,0)'}
       >
         <View style={[styles.inverted, styles.loadOldMessageButton]}>
@@ -85,16 +87,15 @@ class MessageThread extends Component {
     )
   }
 
-  _renderMessageBubble (data) {
+  function renderMessageBubble(data) {
     if (data.item.senderId === 'prompt') {
       return (
         <View style={styles.inverted}>
           <Prompt
             data={data.item}
-            senderId={this.props.user.uid}
-            submitPromptResponse={this.props.submitPromptResponse}
-            threadId={this.props.focusedThread.id}
-            updateFocusedPrompt={this.updateFocusedPrompt}
+            senderId={props.user.uid}
+            threadId={props.focusedThread.id}
+            updateFocusedPrompt={updateFocusedPrompt}
           />
         </View>
       )
@@ -102,10 +103,9 @@ class MessageThread extends Component {
       return (
         <View style={styles.inverted}>
           <PromptResponse
-            users={this.props.focusedThread.users}
-            senderId={this.props.user.uid}
-            submitPromptResponse={this.props.submitPromptResponse}
-            threadId={this.props.focusedThread.id}
+            users={props.focusedThread.users}
+            senderId={props.user.uid}
+            threadId={props.focusedThread.id}
             data={data.item}
           />
         </View>
@@ -114,8 +114,8 @@ class MessageThread extends Component {
       return (
         <View style={styles.inverted}>
           <MessageBubble
-            users={this.props.focusedThread.users}
-            senderId={this.props.user.uid}
+            users={props.focusedThread.users}
+            senderId={props.user.uid}
             message={data.item}
           />
         </View>
@@ -123,48 +123,48 @@ class MessageThread extends Component {
     }
   }
 
-  _renderNormalTextInput = () => {
+  function renderNormalTextInput() {
     return (
-        <View style={[styles.flexRowEnd, styles.justifyContentCenter]}>
-          <TouchableHighlight
-            onPress={() => this._toggleShowSuggestions()}
-            underlayColor={'rgba(255,255,255,0)'}
-          >
-            <View style={{marginBottom: 15, marginLeft: 20}}>
-              <FontAwesome name='quote-right' size={25} color={constants.teal}/>
-            </View>
-          </TouchableHighlight>
-          <ScrollView keyboardDismissMode='on-drag' keyboardShouldPersistTaps='never' style={styles.wrapper}>
-            <TextInput
-              multiline
-              onChangeText={(messageText) => this.setState({messageText})}
-              onContentSizeChange={(e) => this._updateInputHeight(e.nativeEvent.contentSize.height)}
-              onFocus={() => this._hideSuggestions()}
-              placeholder={'Type a message'}
-              style={[styles.messageThreadInput, { height: this.state.height + 15, width: this.state.screenWidth - 130 }]}
-              value={this.state.messageText}
-            />
-          </ScrollView>
-          <View style={{paddingBottom: 10, paddingRight: 10}}>
-            <Button
-              onPress={() => this._sendMessage()}
-              style={{margin: 0}}
-              title={'Send'}
-            />
+      <View style={[styles.flexRowEnd, styles.justifyContentCenter]}>
+        <TouchableHighlight
+          onPress={() => toggleShowSuggestions()}
+          underlayColor={'rgba(255,255,255,0)'}
+        >
+          <View style={{marginBottom: 15, marginLeft: 20}}>
+            <FontAwesome name='quote-right' size={25} color={constants.teal}/>
           </View>
+        </TouchableHighlight>
+        <ScrollView keyboardDismissMode='on-drag' keyboardShouldPersistTaps='never' style={styles.wrapper}>
+          <TextInput
+            multiline
+            onChangeText={(messageText) => setMessageText(messageText)}
+            onContentSizeChange={(e) => updateInputHeight(e.nativeEvent.contentSize.height)}
+            onFocus={() => hideSuggestions()}
+            placeholder={'Type a message'}
+            style={[styles.messageThreadInput, { height: height + 15, width: screenWidth - 130 }]}
+            value={messageText}
+          />
+        </ScrollView>
+        <View style={{paddingBottom: 10, paddingRight: 10}}>
+          <Button
+            onPress={() => sendMessage()}
+            style={{margin: 0}}
+            title={'Send'}
+          />
         </View>
+      </View>
     )
   }
 
-  _renderPromptTextInput = () => {
+  function renderPromptTextInput() {
     return (
       <View style={[styles.flexColumnCenter, styles.alignItemsStretch]}>
         <View style={[styles.backgroundTeal, styles.paddingTen]}>
           <Text style={[styles.smallHelpCenter, { color: 'white' }]}>You are currently answering the prompt:</Text>
-          <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>{this.state.focusedPrompt.message}</Text>
+          <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>{focusedPrompt.message}</Text>
           <TouchableHighlight
             style={styles.promptAnswerButton}
-            onPress={() => this._clearFocusedPrompt()}
+            onPress={() => clearFocusedPrompt()}
             underlayColor={'rgba(255,255,255,0)'}
           >
             <Text style={[styles.smallHelpCenter, {color: 'white'}]}>Done</Text>
@@ -172,7 +172,7 @@ class MessageThread extends Component {
         </View>
         <View style={[styles.flexRowEnd, styles.justifyContentCenter]}>
           <TouchableHighlight
-            onPress={() => this._toggleShowSuggestions()}
+            onPress={() => toggleShowSuggestions()}
             underlayColor={'rgba(255,255,255,0)'}
           >
             <View style={{marginBottom: 15, marginLeft: 20}}>
@@ -182,16 +182,16 @@ class MessageThread extends Component {
           <ScrollView keyboardDismissMode='on-drag' keyboardShouldPersistTaps='never' style={styles.wrapper}>
           <TextInput
             multiline
-            onChangeText={(promptResponseText) => this.setState({promptResponseText})}
-            onContentSizeChange={(e) => this._updateInputHeight(e.nativeEvent.contentSize.height)}
+            onChangeText={(promptResponseText) => setPromptResponseText(promptResponseText)}
+            onContentSizeChange={(e) => updateInputHeight(e.nativeEvent.contentSize.height)}
             placeholder={'Type an answer'}
-            style={[styles.messageThreadInput, { height: this.state.height + 15, width: this.state.screenWidth - 130}]}
-            value={this.state.promptResponseText}
+            style={[styles.messageThreadInput, { height: height + 15, width: screenWidth - 130}]}
+            value={promptResponseText}
           />
           </ScrollView>
           <View style={{paddingBottom: 10, paddingRight: 10}}>
             <Button
-              onPress={() => this._sendPromptResponse()}
+              onPress={() => sendPromptResponse()}
               style={{margin: 0}}
               title={'Send'}
             />
@@ -201,41 +201,41 @@ class MessageThread extends Component {
     )
   }
 
-  _renderSuggestions = () => {
+  function renderSuggestions() {
     return (
       <MessageSuggestions
-        onPressSuggestion={this.handlePickSuggestion}
-        screenWidth={this.state.screenWidth}
+        onPressSuggestion={handlePickSuggestion}
+        screenWidth={screenWidth}
       />
     )
   }
 
-  _renderPairName = () => {
-    var name = "unknown"
-    users = this.props.focusedThread.users
+  function renderPairName() {
+    let name = "unknown"
+    const users = props.focusedThread.users
     if (users) {
       for (userKey in users) {
-        if (userKey != this.props.user.uid) {
+        if (userKey != context.state.user.uid) {
           name = users[userKey].name
         }
       }
     }
-    return this.props.type !== 'reflectionOnly'
+    return props.type !== 'reflectionOnly'
       ? "Paired with " + name
       : 'Solo';
   }
 
-  _renderStreak () {
-    return this.props.focusedThread.messages.length
+  function renderStreak() {
+    return props.focusedThread.messages.length
   }
 
-  _renderEncouragement() {
+  function renderEncouragement() {
     return (
       <Modal
         style={styles.modalColor}
          animationType="slide"
          transparent={false}
-         visible={this.state.showEncouragement}
+         visible={showEncouragement}
          onRequestClose={() => {
            alert('Modal has been closed.');
          }}>
@@ -246,7 +246,7 @@ class MessageThread extends Component {
              source={require('../../../../resources/gifs/kid.gif')}/>
            <TouchableHighlight
              style={styles.encouragementButton}
-             onPress={() => {this._toggleEncouragement()}}>
+             onPress={() => {hideEncouragement()}}>
              <Text style={styles.encouragementButtonText}>Close</Text>
            </TouchableHighlight>
          </View>
@@ -254,64 +254,57 @@ class MessageThread extends Component {
     )
   }
 
-  render () {
-    console.log(this.props.focusedThread.id)
-      return (
-        this.props.focusedThread.id ?
-          (<KeyboardAvoidingView
-            behavior={this.state.behavior}
-            style={styles.wrapper}
-            keyboardVerticalOffset={0}>
-            { this.state.showEncouragement ? this._renderEncouragement() : null }
-            <View
-              onLayout={(e) => { this.setState({screenWidth: e.nativeEvent.layout.width}) }}
-              style={[styles.wrapper, {paddingTop: 20}]}>
-              <View
-                style={[styles.banner, {width: this.state.screenWidth}]}>
-                <View style={styles.bannerContainer}>
-                  <Text style={styles.bannerText}>
-                    {this._renderPairName()}
-                  </Text>
-                  <View style={styles.streakContainer}>
-                    <Text style={styles.streakText}>{this._renderStreak()}</Text>
-                    <Image
-                      style={styles.streakIcon}
-                      source={require('../../../../resources/streak.png')}/>
-                  </View>
-                </View>
-               </View>
-               <FlatList
-                data={this.props.focusedThread.messages}
-                ListFooterComponent={this._renderLoadOldMessages}
-                ref={(component) => this._flatList = component}
-                renderItem={(data) => this._renderMessageBubble(data)}
-                style={[styles.inverted, styles.messageListContainer]}
-               />
-             </View>
+  function clearFocusedPrompt() {
+    setFocusedPrompt(null)
+  }
 
-            <View>
-              { this.state.focusedPrompt ? this._renderPromptTextInput() : this._renderNormalTextInput() }
-              { this.state.showSuggestions && this._renderSuggestions() }
+  function hideSuggestions() {
+    setShowSuggestions(false)
+  }
+
+  function toggleShowSuggestions() {
+    setShowSuggestions(!showSuggestions)
+  }
+
+  console.log('Ct: ' + context.state.user.uid)
+  return (
+    props.focusedThread.id ?
+      (<KeyboardAvoidingView
+        behavior={context.state.behavior}
+        style={styles.wrapper}
+        keyboardVerticalOffset={0}>
+        { showEncouragement ? renderEncouragement() : null }
+        <View
+          onLayout={(e) => { setScreenWidth(e.nativeEvent.layout.width) }}
+          style={[styles.wrapper, {paddingTop: 20}]}>
+          <View
+            style={[styles.banner, {width: screenWidth}]}>
+            <View style={styles.bannerContainer}>
+              <Text style={styles.bannerText}>
+                {renderPairName()}
+              </Text>
+              <View style={styles.streakContainer}>
+                <Text style={styles.streakText}>{renderStreak()}</Text>
+                <Image
+                  style={styles.streakIcon}
+                  source={require('../../../../resources/streak.png')}/>
+              </View>
             </View>
-          </KeyboardAvoidingView>)
-        : (<View style={styles.notPairedMessageContainer}>
-            <Text style={styles.notPairedMessage}> Not paired with anyone.</Text>
-           </View>)
-      )
-  }
+           </View>
+           <FlatList
+            data={props.focusedThread.messages}
+            ListFooterComponent={renderLoadOldMessages}
+            //ref={(component) => this._flatList = component}
+            renderItem={(data) => renderMessageBubble(data)}
+            style={[styles.inverted, styles.messageListContainer]}
+           />
+         </View>
 
-  _clearFocusedPrompt() {
-    this.setState({ focusedPrompt: null})
-  }
-
-  _hideSuggestions () {
-    this.setState({ showSuggestions: false })
-  }
-
-  _toggleShowSuggestions() {
-    this.setState({ showSuggestions: !this.state.showSuggestions })
-  }
+        <View>
+          { focusedPrompt ? renderPromptTextInput() : renderNormalTextInput() }
+          { showSuggestions && renderSuggestions() }
+        </View>
+      </KeyboardAvoidingView>)
+    : (<UnpairedScreen />)
+  )
 }
-
-
-module.exports = MessageThread

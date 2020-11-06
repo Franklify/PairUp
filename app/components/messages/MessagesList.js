@@ -4,26 +4,18 @@ import {
 } from 'react-native'
 import MessagesListRow from './MessagesListRow'
 
-class MessagesList extends Component {
-  constructor (props) {
-    super(props)
-  }
-
-  renderMessagesListRow (data) {
+export default function MessagesList(props) {
+  function renderMessagesListRow(data) {
     return (
-      <MessagesListRow loadMessages={this.props.loadMessages} thread_info={data} />
+      <MessagesListRow loadMessages={props.loadMessages} threadInfo={data} />
     )
   }
 
-  render () {
-    return (
-      <FlatList
-        data={this.props.dataSource}
-        enableEmptySections
-        renderItem={(data) => this.renderMessagesListRow(data)}
-      />
-    )
-  }
+  return (
+    <FlatList
+      data={props.dataSource}
+      enableEmptySections
+      renderItem={(data) => renderMessagesListRow(data)}
+    />
+  )
 }
-
-module.exports = MessagesList

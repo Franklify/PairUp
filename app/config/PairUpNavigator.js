@@ -6,7 +6,7 @@ import React, {
 import fb from './initializeFirebase'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator} from '@react-navigation/stack'
-import { SimpleLineIcons } from '@expo/vector-icons'
+import { AntDesign } from '@expo/vector-icons'
 import PairUpContext from '../config/PairUpContext'
 
 // import MessagesTabContainer from '../components/messages/MessagesTabContainer'
@@ -14,8 +14,11 @@ import PairUpContext from '../config/PairUpContext'
 import AboutScreen from '../components/about/AboutScreen'
 import ChangeAvatarScreen from '../components/profile/ChangeAvatarScreen'
 import ChangePasswordScreen from '../components/profile/ChangePasswordScreen'
+import ChatScreen from '../components/messages/tabs/ChatScreen'
 import LoginScreen from '../components/auth/LoginScreen'
 import ProfileScreen from '../components/profile/ProfileScreen'
+import ReflectionScreen from '../components/messages/tabs/ReflectionScreen'
+import ReflectionAndChatScreen from '../components/messages/tabs/ReflectionAndChatScreen'
 import SignupScreen from '../components/auth/SignupScreen'
 import SplashScreen from '../components/auth/SplashScreen'
 
@@ -24,17 +27,13 @@ const reactNative = require('react-native');
 const {
   AsyncStorage
 } = reactNative;
-//
-// import ChatTabContainer from '../components/messages/ChatTabContainer'
-// import ReflectionTabContainer from '../components/messages/ReflectionTabContainer'
-// import ReflectionAndChatTabContainer from '../components/messages/ReflectionAndChatTabContainer'
 
 const AuthStack = createStackNavigator();
 function AuthStackScreen () {
   return (
     <AuthStack.Navigator
-        initialRouteName="Login"
-      >
+      initialRouteName="Login"
+    >
       <AuthStack.Screen
         name="Login"
         component={LoginScreen}
@@ -46,88 +45,137 @@ function AuthStackScreen () {
         options={{headerShown: false}}
       />
     </AuthStack.Navigator>
-  );
+  )
 }
 
-const PairedTabs = createBottomTabNavigator();
-function MainScreenPaired () {
+function getIconName(route) {
+  switch (route.name) {
+    case 'AboutTab':
+      return 'home'
+    case 'ChatTab':
+      return 'message1'
+    case 'ReflectTab':
+      return 'form'
+    case 'ReflectAndChatTab':
+      return 'message1'
+    case 'ProfileTab':
+      return 'user'
+  }
+}
+
+const MainTabsPaired = createBottomTabNavigator();
+function MainTabsPairedScreen () {
   return (
-    <PairedTabs.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color }) => {
-            let iconName;
-
-            if (route.name === 'AboutTab') {
-              iconName = 'info'
-              // iconName = focused
-              //   ? 'ios-information-circle'
-              //   : 'ios-information-circle-outline';
-            } else if (route.name === 'ProfileTab') {
-              iconName = 'user-female'
-              //iconName = focused ? 'ios-list-box' : 'ios-list';
-            }
-
-            // You can return any component that you like here!
-            return <SimpleLineIcons name={iconName} size={26} color={color} />;
-          },
-        })}
-        initialRouteName="AboutTab"
-        tabBarOptions={{
-          activeTintColor: constants.teal,
-          inactiveTintColor: 'gray',
-        }}
-      >
-      <PairedTabs.Screen
-          name="AboutTab"
-          component={AboutScreen}
-          options={{
+    <MainTabsPaired.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color }) => {
+          const iconName = getIconName(route);
+          return <AntDesign name={iconName} size={26} color={color} />;
+        },
+      })}
+      initialRouteName="AboutTab"
+      tabBarOptions={{
+        activeTintColor: constants.teal,
+        inactiveTintColor: 'gray',
+      }}
+    >
+      <MainTabsPaired.Screen
+        name="AboutTab"
+        component={AboutScreen}
+        options={{
           tabBarLabel: 'Welcome',
         }}
        />
-      <PairedTabs.Screen
-          name="ProfileTab"
-          component={ProfileScreen}
-          options={{
+      <MainTabsPaired.Screen
+        name="ReflectAndChatTab"
+        component={ReflectionAndChatScreen}
+        options={{
+          tabBarLabel: 'Reflect & Chat',
+        }}
+      />
+      <MainTabsPaired.Screen
+        name="ProfileTab"
+        component={ProfileScreen}
+        options={{
           tabBarLabel: 'Profile',
         }}
-       />
-    </PairedTabs.Navigator>
-  );
+      />
+    </MainTabsPaired.Navigator>
+  )
 }
 
-
-const SoloTabs = createBottomTabNavigator();
-function MainScreenSolo () {
+const MainTabsSolo = createBottomTabNavigator();
+function MainTabsSoloScreen () {
   return (
-    <SoloTabs.Navigator
-        initialRouteName="AboutTab"
-        tabBarOptions={{
-          activeTintColor: constants.teal,
-          inactiveTintColor: 'gray',
+    <MainTabsSolo.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color }) => {
+          const iconName = getIconName(route);
+          return <AntDesign name={iconName} size={26} color={color} />;
+        },
+      })}
+      initialRouteName="AboutTab"
+      tabBarOptions={{
+        activeTintColor: constants.teal,
+        inactiveTintColor: 'gray',
+      }}
+    >
+      <MainTabsSolo.Screen
+        name="AboutTab"
+        component={AboutScreen}
+        options={{
+          tabBarLabel: 'Welcome',
         }}
-      >
-      <SoloTabs.Screen name="AboutTab" component={AboutScreen} />
-      <SoloTabs.Screen name="ProfileTab" component={ProfileScreen} />
-      //<SoloTabs.Screen name="ReflectionTab" component={ReflectiontTabContainer} />
-      //<SoloTabs.Screen name="ChatTab" component={ChatTabContainer} />
-    </SoloTabs.Navigator>
-  );
+      />
+      <MainTabsSolo.Screen
+        name="ReflectTab"
+        component={ReflectionScreen}
+        options={{
+          tabBarLabel: 'Reflect',
+        }}
+      />
+      <MainTabsSolo.Screen
+        name="ChatTab"
+        component={ChatScreen}
+        options={{
+          tabBarLabel: 'Chat',
+        }}
+      />
+      <MainTabsSolo.Screen
+        name="ProfileTab"
+        component={ProfileScreen}
+        options={{
+          tabBarLabel: 'Profile',
+        }}
+      />
+    </MainTabsSolo.Navigator>
+  )
 }
 
 const HomeStack = createStackNavigator();
 function HomeStackScreen() {
+  const context = useContext(PairUpContext)
+  const isPaired = context.state.user && context.state.user.reflectionType === 'paired'
+
   return (
     <HomeStack.Navigator
-      initialRouteName="PairedTabs"
+      initialRouteName={isPaired ? "PairedTabs" : "SoloTabs"}
       screenOptions={{
         headerShown: false
       }}
     >
-      <HomeStack.Screen
-        name="PairedTabs"
-        component={MainScreenPaired}
-        options={{headerShown: false}}
-      />
+      {isPaired ?
+        (<HomeStack.Screen
+          name="PairedTabs"
+          component={MainTabsPairedScreen}
+          options={{headerShown: false}}
+        />) :
+        (<HomeStack.Screen
+          name="SoloTabs"
+          component={MainTabsSoloScreen}
+          options={{headerShown: false}}
+        />)
+      }
       <HomeStack.Screen
         name="ChangeAvatar"
         component={ChangeAvatarScreen}
@@ -147,7 +195,7 @@ function HomeStackScreen() {
         }}
       />
     </HomeStack.Navigator>
-  );
+  )
 }
 
 const RootStack = createStackNavigator();
@@ -167,7 +215,7 @@ function RootStackScreen() {
       }
       if (loading) setLoading(false);
     })
-  }, []);
+  }, [])
 
   return (
     <RootStack.Navigator
@@ -195,12 +243,12 @@ function RootStackScreen() {
           options={{
             headerShown: false,
             // When logging out, a pop animation feels intuitive
-            animationTypeForReplace: true ? 'pop' : 'push', //state.isSignout
+            animationTypeForReplace: 'pop',
           }}
         />
       )}
     </RootStack.Navigator>
-  );
+  )
 }
 
 export default RootStackScreen

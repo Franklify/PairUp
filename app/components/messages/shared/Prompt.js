@@ -1,4 +1,8 @@
-import React, {Component} from 'react'
+import React, {
+  useContext,
+  useEffect,
+  useState
+} from 'react'
 import {
   Button,
   KeyboardAvoidingView,
@@ -9,49 +13,48 @@ import {
   View
 } from 'react-native'
 import MaterialInitials from 'react-native-material-initials/native'
+import PairUpContext from '../../../config/PairUpContext'
 const constants = require('../../../styles/constants.js')
 const styles = require('../../../styles/styles.js')
 
-class Prompt extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      behavior: 'padding',
-      modalVisible: false,
-      pressedBubbles: {},
-      pressedResponses: {},
-      promptAnswerText: ''
-    }
+export default function Prompt(props) {
+  const context = useContext(PairUpContext)
+  const [modalVisible, setModalVisible] = useState(false)
+  const [pressedBubbles, setPressedBubbles] = useState({})
+  const [pressedResponses, setPressedResponses] = useState({})
+  const [promptAnswerText, setPromptAnswerText] = useState('')
 
-    this.promptResponses = this._promptResponses()
-  }
+  const promptResponses = getPromptResponses()
+  let answered = false
 
-  componentDidMount () {
-    if (this.props.data.responseOptions) {
-      var entries = Object.entries(this.props.data.responseOptions)
-      var bubbles = {}
-      var responses = {}
+  useEffect(() => {
+    if (props.data.responseOptions) {
+      const entries = Object.entries(props.data.responseOptions)
+      let bubbles = {}
+      let responses = {}
       entries.forEach(function (entry) {
         bubbles[entry[0]] = false
         responses[entry[1]] = false
       })
 
-      this.setState({
-        pressedBubbles: bubbles,
-        pressedResponses: responses
-      })
+      setPressedBubbles(bubbles)
+      setPressedResponses(responses)
     }
+
+    if (props.data.responses) {
+      answered = (props.senderId in props.data.responses)
+    }
+  }, []);
+
+  function changeModalVisibility(visible) {
+    setModalVisible(visible)
   }
 
-  _changeModalVisibility (visible) {
-    this.setState({modalVisible: visible})
-  }
-
-  _getResponsesOrTextInput () {
-    if (this.promptResponses !== null) {
+  function getResponsesOrTextInput() {
+    if (promptResponses !== null) {
       return (
         <View style={styles.flexColumnCenter}>
-          {this.touchablePromptResponses()}
+          {getTouchablePromptResponses()}
         </View>
       )
     }
@@ -59,18 +62,18 @@ class Prompt extends Component {
       <View style={styles.flexRowCenter}>
         <TextInput
           multiline
-          onChangeText={(promptAnswerText) => this.setState({promptAnswerText})}
+          onChangeText={(answerText) => setPromptAnswerText(answerText)}
           placeholder={'Write your response here'}
           style={styles.promptAnswerInput}
-          value={this.state.promptAnswerText}
+          value={promptAnswerText}
         />
       </View>
     )
   }
 
-  _promptResponses = () => {
-    if (this.props.data.responseOptions) {
-      var entries = Object.entries(this.props.data.responseOptions)
+  function getPromptResponses() {
+    if (props.data.responseOptions) {
+      let entries = Object.entries(props.data.responseOptions)
       return entries.map(item =>
         (<View key={item[0]} style={styles.promptResponseItem}>
           <Text>{item[1]}</Text>
@@ -80,12 +83,12 @@ class Prompt extends Component {
     return null
   }
 
-  touchablePromptResponses () {
-    if (this.props.data.responseOptions) {
-      return Object.entries(this.props.data.responseOptions).map(item =>
-        (<View key={item[0]} style={[styles.promptResponseItem, this.state.pressedBubbles[item[0]] === true ? styles.responsePressed : null]}>
+  function getTouchablePromptResponses() {
+    if (props.data.responseOptions) {
+      return Object.entries(props.data.responseOptions).map(item =>
+        (<View key={item[0]} style={[styles.promptResponseItem, pressedBubbles[item[0]] === true ? styles.responsePressed : null]}>
           <TouchableHighlight
-            onPress={() => this._toggleBubblePress(item[0], item[1])}
+            onPress={() => toggleBubblePress(item[0], item[1])}
             underlayColor={'rgba(255,255,255,0)'}
           >
             <Text>{item[1]}</Text>
@@ -96,38 +99,34 @@ class Prompt extends Component {
     return null
   }
 
-  _submitPromptResponse () {
-    if (this.props.data.responseOptions) {
-      response = this.state.pressedBubbles
-    } else {
-      response = this.state.promptAnswerText
-    }
-    this.props.submitPromptResponse(this.props.data, response, this.props.senderId, this.props.threadId)
-    this.setState({promptAnswerText: '', pressedResponses: {}, pressedBubbles: {}})
-    this._changeModalVisibility(false)
+  async function submitPromptResponse() {
+    const response = (props.data.responseOptions) ? pressedBubbles : promptAnswerText
+    await context.submitPromptResponse(props.data, response, props.senderId, props.threadId)
+    setPromptAnswerText('')
+    setPressedResponses({})
+    setPressedBubbles({})
+    changeModalVisibility(false)
   }
 
-  _toggleBubblePress (key, response) {
-    var bubbles = this.state.pressedBubbles
-    bubbles[key] = !this.state.pressedBubbles[key]
+  function toggleBubblePress(key, response) {
+    let bubbles = pressedBubbles
+    bubbles[key] = !pressedBubbles[key]
 
-    var responses = this.state.pressedResponses
-    responses[response] = !this.state.pressedResponses[response]
+    let responses = pressedResponses
+    responses[response] = !pressedResponses[response]
 
-    this.setState({
-      pressedBubbles: bubbles,
-      pressedResponses: responses
-    })
+    setPressedBubbles(bubbles)
+    setPressedResponses(responses)
   }
 
-  _unanswered () {
+  function renderUnanswered() {
     return (
       <TouchableHighlight
-        onPress={() => this.props.updateFocusedPrompt(this.props.data)}
+        onPress={() => props.updateFocusedPrompt(props.data)}
         underlayColor={'rgba(255,255,255,0)'}
       >
         <View>
-          {this.promptResponses}
+          {promptResponses}
           <View style={styles.promptAnswerButton}>
             <Text style={styles.promptAnswerButtonText}>Answer</Text>
           </View>
@@ -135,10 +134,11 @@ class Prompt extends Component {
       </TouchableHighlight>
     )
   }
-  _answered () {
+
+  function renderAnswered() {
     return (
       <View>
-      {this.promptResponses}
+      {promptResponses}
       <View style={styles.promptDoneButton}>
         <Text style={styles.promptDoneButtonText}>Done!</Text>
       </View>
@@ -146,68 +146,60 @@ class Prompt extends Component {
     )
   }
 
-  _renderPromptDate () {
-    timestamp = (new Date(this.props.data.timestamp)).toString()
-    day = timestamp.slice(0,3)
-    date = timestamp.slice(4,10)
-    yearTime = timestamp.slice(11,21)
+  function renderPromptDate() {
+    const timestamp = (new Date(props.data.timestamp)).toString()
+    const day = timestamp.slice(0,3)
+    const date = timestamp.slice(4,10)
+    const yearTime = timestamp.slice(11,21)
     return(day + ", " + date + ", " + yearTime)
   }
 
-  render () {
-    answered = false
-    if (this.props.data.responses) {
-      answered = (this.props.senderId in this.props.data.responses)
-    }
-    return (
-      <View>
-        <Modal
-          animationType={'fade'}
-          transparent
-          visible={this.state.modalVisible}
-        >
-          <KeyboardAvoidingView behavior={this.state.behavior} style={[styles.darkenedBackgroundOverlay, {borderColor: 'black'}]}>
-            <View style={styles.promptResponseModal}>
-              <View style={styles.promptModalHeaderContainer}>
-                <Text style={styles.promptModalHeading}>PairUp Prompt</Text>
-              </View>
-              <View style={styles.promptTextContainer}>
-                <Text>{this.props.data.message}</Text>
-              </View>
-              {this._getResponsesOrTextInput()}
-              <View style={styles.flexRowCenter}>
-                <Button
-                  onPress={() => this._changeModalVisibility(false)}
-                  style={styles.promptModalButton}
-                  title={'Cancel'}
-                />
-                <Button
-                  onPress={() => this._submitPromptResponse()}
-                  style={styles.promptModalButton}
-                  title={'Submit'}
-                />
-              </View>
+  return (
+    <View>
+      <Modal
+        animationType={'fade'}
+        transparent
+        visible={modalVisible}
+      >
+        <KeyboardAvoidingView behavior={context.state.behavior} style={[styles.darkenedBackgroundOverlay, {borderColor: 'black'}]}>
+          <View style={styles.promptResponseModal}>
+            <View style={styles.promptModalHeaderContainer}>
+              <Text style={styles.promptModalHeading}>PairUp Prompt</Text>
             </View>
-          </KeyboardAvoidingView>
-        </Modal>
-        <View style={[styles.promptContainer, styles.backgroundOrange]}>
-          <View style={styles.promptHeadingContainer}>
-            <MaterialInitials
-              backgroundColor={(answered) ? constants.promptDoneButtonColor : '#659EFF'}
-              color={'white'} size={25} text={'PairUp'} />
-            <Text style={styles.promptHeading}>PairUp Prompt</Text>
+            <View style={styles.promptTextContainer}>
+              <Text>{props.data.message}</Text>
+            </View>
+            {getResponsesOrTextInput()}
+            <View style={styles.flexRowCenter}>
+              <Button
+                onPress={() => changeModalVisibility(false)}
+                style={styles.promptModalButton}
+                title={'Cancel'}
+              />
+              <Button
+                onPress={() => submitPromptResponse()}
+                style={styles.promptModalButton}
+                title={'Submit'}
+              />
+            </View>
           </View>
-          <Text style={styles.promptTimestamp}>{this._renderPromptDate()}</Text>
-          <View style={styles.promptTextContainer}>
-            <Text style={{color: 'white'}}>{this.props.data.message}</Text>
-          </View>
-          {answered ? this._answered() : this._unanswered()}
+        </KeyboardAvoidingView>
+      </Modal>
+      <View style={[styles.promptContainer, styles.backgroundOrange]}>
+        <View style={styles.promptHeadingContainer}>
+          <MaterialInitials
+            backgroundColor={(answered) ? constants.promptDoneButtonColor : '#659EFF'}
+            color={'white'} size={25} text={'PairUp'} />
+          <Text style={styles.promptHeading}>PairUp Prompt</Text>
         </View>
+        <Text style={styles.promptTimestamp}>{renderPromptDate()}</Text>
+        <View style={styles.promptTextContainer}>
+          <Text style={{color: 'white'}}>{props.data.message}</Text>
+        </View>
+        {answered ? renderAnswered() : renderUnanswered()}
       </View>
-    )
-  }
+    </View>
+  )
 }
 
 // onPress={() => this.props.updateFocusedPrompt(this.props.data.message)}
-
-module.exports = Prompt

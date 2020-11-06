@@ -1,47 +1,44 @@
-import React, {Component} from 'react'
+import React, {
+  useContext,
+  useEffect,
+  useState
+} from 'react'
 import {
   Text,
   TouchableHighlight,
   View
 } from 'react-native'
 import MaterialInitials from 'react-native-material-initials/native'
+import PairUpContext from '../../config/PairUpContext'
 import * as constants from '../../styles/constants.js'
 const styles = require('../../styles/styles.js')
 
-class MessagesListRow extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      title: this.props.thread_info.title,
-      msg_preview: this.props.thread_info.last_message ? this.props.thread_info.last_message.message : ''
-    }
-  }
+export default function MessagesListRow(props) {
+  const context = useContext(PairUpContext)
+  const lastMessage = props.threadInfo.lastMessage
+  const [title, setTitle] = useState(props.threadInfo.title)
+  const [messagePreview, setMessagePreview] = useState(lastMessage ? lastMessage.message : '')
 
-  componentWillReceiveProps (nextProps) {
-    if (this.props.thread_info !== nextProps.thread_info) {
-      this.setState({
-        title: nextProps.thread_info.title,
-        msg_preview: nextProps.thread_info.last_message.message
-      })
-    }
-  }
+
+  useEffect(() => {
+    setTitle(props.threadInfo.title)
+    setMessagePreview(props.threadInfo.lastMessage.message)
+  }, [props.threadInfo]);
 
   render () {
     return (
       <TouchableHighlight
-        onPress={() => this.props.loadMessages(this.props.thread_info)}
+        onPress={() => context.loadMessages(props.threadInfo)}
         underlayColor={'rgba(0,0,0,0.5)'}
       >
         <View style={styles.messageListRow}>
-          <MaterialInitials backgroundColor={constants.mediumGray} color={'white'} single={false} size={constants.messageListAvatarSize} text={this.state.title} />
+          <MaterialInitials backgroundColor={constants.mediumGray} color={'white'} single={false} size={constants.messageListAvatarSize} text={title} />
           <View style={styles.messageListTextWrapper}>
-            <Text style={styles.messageListRowTitle}>{this.state.title}</Text>
-            <Text style={styles.messageListRowPreview}>{this.state.msg_preview}</Text>
+            <Text style={styles.messageListRowTitle}>{title}</Text>
+            <Text style={styles.messageListRowPreview}>{messagePreview}</Text>
           </View>
         </View>
       </TouchableHighlight>
     )
   }
 }
-
-module.exports = MessagesListRow
