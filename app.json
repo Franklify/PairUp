@@ -2,7 +2,7 @@
   "expo": {
     "name": "pairup",
     "icon": "resources/ios/pairup_icon_ios.png",
-    "version": "2.0.1",
+    "version": "2.1.0",
     "slug": "pairup-slug",
     "ios": {
       "bundleIdentifier": "com.pairachute.pairachuteapp",
@@ -12,11 +12,15 @@
     "android": {
       "package": "com.pairachute.pairachute",
       "icon": "resources/android/pairup_icon_android.png",
-      "versionCode": 9
+      "versionCode": 10,
+      "googleServicesFile": "./google-services.json"
     },
     "platforms": [
       "ios",
       "android"
-    ]
+    ],
+    "assetBundlePatterns": [
+      "resources/*"
+    ],
   }
 }
