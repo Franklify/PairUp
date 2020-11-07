@@ -42,10 +42,6 @@ export default function Prompt(props) {
       setPressedBubbles(bubbles)
       setPressedResponses(responses)
     }
-
-    if (props.data.responses) {
-      answered = (props.senderId in props.data.responses)
-    }
   }, []);
 
   function changeModalVisibility(visible) {
@@ -196,7 +192,8 @@ export default function Prompt(props) {
         <View style={styles.promptTextContainer}>
           <Text style={{color: 'white'}}>{props.data.message}</Text>
         </View>
-        {answered ? renderAnswered() : renderUnanswered()}
+        {props.data && props.data.responses && (props.senderId in props.data.responses)
+          ? renderAnswered() : renderUnanswered()}
       </View>
     </View>
   )

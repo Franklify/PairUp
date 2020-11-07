@@ -36,16 +36,9 @@ export default function MessageThread(props) {
   const [showEncouragement, setShowEncouragement] = useState(false)
   const [encouragementHasShown, setEncouragementHasShown] = useState(false)
 
-  function handlePickSuggestion(message) {
-    setMessageText(message)
-  }
-
-  function updateFocusedPrompt(prompt) {
-    setFocusedPrompt(prompt)
-  }
-
   function sendMessage() {
-    context.sendMessage(messageText, props.user.uid, context.state.user.displayName, props.focusedThread.id)
+    console.log(props.pairUser.pushToken + ' ' + props.user.displayName)
+    context.sendMessage(messageText, props.user.uid, props.user.displayName, props.pairUser.pushToken, props.focusedThread.id)
     if (focusedPrompt) {
       displayEncouragement()
     }
@@ -99,7 +92,7 @@ export default function MessageThread(props) {
             data={data.item}
             senderId={props.user.uid}
             threadId={props.focusedThread.id}
-            updateFocusedPrompt={updateFocusedPrompt}
+            updateFocusedPrompt={setFocusedPrompt}
           />
         </View>
       )
@@ -214,23 +207,13 @@ export default function MessageThread(props) {
   function renderSuggestions() {
     return (
       <MessageSuggestions
-        onPressSuggestion={handlePickSuggestion}
+        onPressSuggestion={setMessageText}
         screenWidth={screenWidth}
       />
     )
   }
 
   function renderPairName() {
-    let name = "unknown"
-    const users = props.focusedThread.users
-    if (users) {
-      for (userKey in users) {
-        if (userKey != context.state.user.uid) {
-          name = users[userKey].name
-        }
-      }
-    }
-
     const isPaired = props.type !== 'reflectionOnly'
     return(
       <View style={{flex: 1, flexDirection: 'row'}}>
@@ -241,7 +224,7 @@ export default function MessageThread(props) {
         </Text>
         {isPaired &&
           <Text style={[styles.bannerText, styles.bannerNameText]}>
-            {name}
+            {props.pairUser ? props.pairUser.name : "a Friend"}
           </Text>
         }
       </View>

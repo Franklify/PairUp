@@ -152,7 +152,7 @@ export function PairUpReducers (state, action) {
     case types.LOAD_NEW_REFLECTION_AND_CHAT_MESSAGES_SUCCESS:
       return {...state,
         reflectionAndChatThread: {...state.reflectionAndChatThread,
-          messages: state.reflectionAndChatThread.messages.length > 0 && state.reflectionAndChatThread.messages[0].key !== action.newMessage[0].key ? action.newMessage.concat(state.reflectionAndChatThread.messages) : state.reflectionAndChatThread.messages
+          messages: state.reflectionAndChatThread.messages && state.reflectionAndChatThread.messages.length > 0 && state.reflectionAndChatThread.messages[0].key !== action.newMessage[0].key ? action.newMessage.concat(state.reflectionAndChatThread.messages) : state.reflectionAndChatThread.messages
         }
       }
     case types.LOAD_OLD_REFLECTION_AND_CHAT_MESSAGES_SUCCESS:

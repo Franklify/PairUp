@@ -27,11 +27,24 @@ export default function ReflectionAndChatScreen({navigation}) {
     }
   }, []);
 
+  function getPairUser() {
+    const users = reflectionAndChatThread.users
+    if (users) {
+      for (userKey in users) {
+        if (userKey != context.state.user.uid) {
+          return users[userKey]
+        }
+      }
+    }
+    return null
+  }
+
   return (
     <View style={styles.wrapper}>
       {reflectionAndChatThread && reflectionAndChatThread.isReady
         ? <MessageThread
             user={context.state.user}
+            pairUser={getPairUser()}
             focusedThread={reflectionAndChatThread}
             type={reflectionAndChatType}
           />

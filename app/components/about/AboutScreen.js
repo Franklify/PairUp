@@ -1,4 +1,7 @@
-import React, { useContext } from 'react'
+import React, {
+  useContext,
+  useEffect
+} from 'react'
 import {
   Button,
   Image,
@@ -17,9 +20,9 @@ const aboutStyles = require('./styles.js')
 export default function AboutScreen({navigation}) {
   const context = useContext(PairUpContext)
 
-  // componentDidMount() {
-  //   this.props.registerForPushNotificationsAsync()
-  // }
+  useEffect(() => {
+    context.registerForPushNotificationsAsync()
+  }, []);
 
   // function renderStep3Text() {
   //   if (context.state.user.reflectionType === 'paired') {

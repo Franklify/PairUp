@@ -65,7 +65,7 @@ export default function ChangeAvatarScreen({navigation}) {
     await context.changeAvatar(index)
   }
 
-  const _renderAvatar = ({item}) => (
+  const renderAvatar = ({item}) => (
     <Avatar
       index={item.index}
       selected={avatarIndex}
@@ -73,12 +73,12 @@ export default function ChangeAvatarScreen({navigation}) {
     />
   );
 
-  const _renderAvatarRow = ({item}) => (
+  const renderAvatarRow = ({item}) => (
     <FlatList
       data={item}
       horizontal={true}
       scrollEnabled={false}
-      renderItem={_renderAvatar}
+      renderItem={renderAvatar}
     />
   );
 
@@ -96,7 +96,7 @@ export default function ChangeAvatarScreen({navigation}) {
       <FlatList
         data={avatarData}
         showsVerticalScrollIndicator={false}
-        renderItem={_renderAvatarRow}
+        renderItem={renderAvatarRow}
       />
     </View>
   )

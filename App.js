@@ -1,8 +1,12 @@
 import 'react-native-gesture-handler';
-import React, { useReducer } from 'react'
+import React, {
+  useState,
+  useReducer
+} from 'react'
 //import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CommonActions, NavigationContainer } from '@react-navigation/native';
-import { Notifications } from 'expo';
+import { NavigationContainer } from '@react-navigation/native';
+import Constants from 'expo-constants';
+import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 
 import * as ActionCreators from './app/actions'
@@ -11,6 +15,7 @@ import PairUpContext, { InitialState } from './app/config/PairUpContext'
 import PairUpReducers from './app/reducers'
 import * as authReducers from './app/reducers/authReducers'
 import fb from './app/config/initializeFirebase'
+import { sendPushNotification } from './notifications'
 
 const db = fb.database()
 const reactNative = require('react-native');
@@ -20,6 +25,7 @@ const {
 
 const PairUpApp = () => {
   const [state, dispatch] = useReducer(PairUpReducers, InitialState)
+  const [expoPushToken, setExpoPushToken] = useState(null)
 
   // Auth
   async function login(email, password) {
@@ -52,46 +58,60 @@ const PairUpApp = () => {
     }
   }
 
-  const registerForPushNotificationsAsync = () => {
-    return async function (dispatch) {
-      try {
-        dispatch(ActionCreators.ActionCreators.registerPushAttempt())
+  async function registerForPushNotificationsAsync() {
+    try {
+      dispatch(ActionCreators.ActionCreators.registerPushAttempt())
 
-        const { existingStatus } = await Permissions.getAsync(Permissions.REMOTE_NOTIFICATIONS);
-        let finalStatus = existingStatus;
-
+      let token = expoPushToken
+      if (Constants.isDevice) {
+        const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+        let finalStatus = existingStatus
         // only ask if permissions have not already been determined, because
         // iOS won't necessarily prompt the user a second time.
         if (existingStatus !== 'granted') {
           // Android remote notification permissions are granted during the app
           // install, so this will only ask on iOS
-          const { status } = await Permissions.askAsync(Permissions.REMOTE_NOTIFICATIONS);
-          finalStatus = status;
+          const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+          finalStatus = status
         }
-
         // Stop here if the user did not grant permissions
         if (finalStatus !== 'granted') {
           console.log('push failure - user did not grant permissions')
           dispatch(ActionCreators.ActionCreators.registerPushFailure())
+          return
         }
-
+        console.log(token)
         // Get the token that uniquely identifies this device
-        const token = await Notifications.getExpoPushTokenAsync();
-        console.log('got token', token)
-
-        const updates = {}
-        const user = fb.auth().currentUser;
-        let userInfo = (await db.ref('/users/' + user.uid).once('value')).val()
-        const newUserInfo = Object.assign({}, userInfo, {
-          pushToken: token
-        })
-        updates['/users/' + user.uid] = newUserInfo
-        await db.ref().update(updates)
-        dispatch(ActionCreators.ActionCreators.registerPushSuccess())
-      } catch (err) {
-        console.log('push failure', err.message)
+        token = (await Notifications.getExpoPushTokenAsync()).data;
+        setExpoPushToken(token)
+      } else {
+        console.log('Must use physical device for Push Notifications')
         dispatch(ActionCreators.ActionCreators.registerPushFailure())
+        return
       }
+
+      if (Platform.OS === 'android') {
+        Notifications.setNotificationChannelAsync('default', {
+          name: 'default',
+          importance: Notifications.AndroidImportance.MAX,
+          vibrationPattern: [0, 250, 250, 250],
+          lightColor: '#FF231F7C',
+        });
+      }
+
+      const updates = {}
+      const user = fb.auth().currentUser;
+      console.log(user.uid)
+      let userInfo = (await db.ref('/users/' + user.uid).once('value')).val()
+      const newUserInfo = Object.assign({}, userInfo, {
+        pushToken: token
+      })
+      updates['/users/' + user.uid] = newUserInfo
+      await db.ref().update(updates)
+      dispatch(ActionCreators.ActionCreators.registerPushSuccess())
+    } catch (err) {
+      console.log('push failure', err.message)
+      dispatch(ActionCreators.ActionCreators.registerPushFailure())
     }
   }
 
@@ -197,10 +217,11 @@ const PairUpApp = () => {
 
       let users = {}
       for (let userId in threadInfo.users) {
-        const name = threadInfo.users[userId]
-        const avatar = await db.ref('/users/' + userId + '/avatarIndex').once('value')
-        const avatarIndex = avatar.val()
-        users[userId] = {'name': name, 'avatarIndex': avatarIndex}
+        const userInfo = ( await db.ref('/users/' + userId).once('value') ).val()
+        const name = userInfo.displayName
+        const avatarIndex = userInfo.avatarIndex
+        const expoPushToken = userInfo.pushToken
+        users[userId] = {'name': name, 'avatarIndex': avatarIndex, 'pushToken': expoPushToken}
       }
 
       const focusedThread = {
@@ -238,7 +259,7 @@ const PairUpApp = () => {
       }
     } catch (err) {
       console.log('loadMessages error', err)
-      dispatch(ActionCreators.ActionCreators.intiailLoadMessagesFailure())
+      dispatch(ActionCreators.ActionCreators.initialLoadMessagesFailure())
     }
   }
 
@@ -313,7 +334,7 @@ const PairUpApp = () => {
     }
   }
 
-  async function sendMessage (message, senderId, senderDisplayName, threadId) {
+  async function sendMessage (message, senderId, senderDisplayName, receiverPushToken, threadId) {
     try {
       dispatch(ActionCreators.ActionCreators.sendMessageAttempt())
       let updates = {}
@@ -348,6 +369,7 @@ const PairUpApp = () => {
       updates['/threads/' + threadId + '/last_message'] = newMsgData
 
       await db.ref().update(updates)
+      await sendPushNotification(receiverPushToken, senderDisplayName, message)
       dispatch(ActionCreators.ActionCreators.sendMessageSuccess())
     } catch (err) {
       console.log('send message error', err.message)
