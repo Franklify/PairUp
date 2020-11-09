@@ -1,5 +1,7 @@
 node_modules/
 .expo/
 npm-debug.*
-app/config/secrets.js
+credentials/
+google-services.json
+pairup-slug.jks
 .DS_Store

@@ -10,9 +10,9 @@
       "supportsTablet": false
     },
     "android": {
-      "package": "com.pairachute.pairachute",
+      "package": "com.pairup.pairup",
       "icon": "resources/android/pairup_icon_android.png",
-      "versionCode": 10,
+      "versionCode": 1,
       "googleServicesFile": "./google-services.json"
     },
     "platforms": [
