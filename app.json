@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "pairup",
+    "name": "PairUp",
     "icon": "resources/ios/pairup_icon_ios.png",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "slug": "pairup-slug",
     "ios": {
       "bundleIdentifier": "com.pairachute.pairachuteapp",
@@ -12,8 +12,9 @@
     "android": {
       "package": "com.pairup.pairup",
       "icon": "resources/android/pairup_icon_android.png",
-      "versionCode": 1,
-      "googleServicesFile": "./google-services.json"
+      "versionCode": 2,
+      "googleServicesFile": "./google-services.json",
+      "permissions": ["NOTIFICATIONS"]
     },
     "platforms": [
       "ios",
