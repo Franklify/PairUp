@@ -1,4 +1,4 @@
-import * as firebase from 'firebase'
+import firebase from 'firebase'
 import * as secrets from '../../credentials/firebaseCredentials'
 
 // Initialize Firebase

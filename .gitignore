@@ -5,3 +5,5 @@ credentials/
 google-services.json
 pairup-slug.jks
 .DS_Store
+package-lock.json
+yarn.lock

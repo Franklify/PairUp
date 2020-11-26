@@ -37,7 +37,6 @@ export default function MessageThread(props) {
   const [encouragementHasShown, setEncouragementHasShown] = useState(false)
 
   function sendMessage() {
-    console.log(props.pairUser.pushToken + ' ' + props.user.displayName)
     context.sendMessage(messageText, props.user.uid, props.user.displayName, props.pairUser.pushToken, props.focusedThread.id)
     if (focusedPrompt) {
       displayEncouragement()
