@@ -18,12 +18,12 @@ export default function ReflectionScreen({navigation}) {
   const reflectionOnlyThread = context.state.reflectionOnlyThread
 
   useEffect(() => {
-    const threads = context.state.user.threads
-    async function loadMessages() {
-      await context.loadMessages(reflectionOnlyType, threads.reflectionOnly)
+    const user = context.state.user
+    async function loadMessages(reflectionOnly) {
+      await context.loadMessages(reflectionOnlyType, reflectionOnly)
     }
-    if (threads && threads.reflectionOnly) {
-      loadMessages()
+    if (user && user.threads && user.threads.reflectionOnly) {
+      loadMessages(user.threads.reflectionOnly)
     }
   }, []);
 

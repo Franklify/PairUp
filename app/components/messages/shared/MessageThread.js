@@ -189,14 +189,14 @@ export default function MessageThread(props) {
             </View>
           </TouchableHighlight>
           <ScrollView keyboardDismissMode='on-drag' keyboardShouldPersistTaps='never' style={styles.wrapper}>
-          <TextInput
-            multiline
-            onChangeText={(promptResponseText) => setPromptResponseText(promptResponseText)}
-            onContentSizeChange={(e) => updateInputHeight(e.nativeEvent.contentSize.height)}
-            placeholder={'Type an answer'}
-            style={[styles.messageThreadInput, { height: height + 15, width: screenWidth - 130}]}
-            value={promptResponseText}
-          />
+            <TextInput
+              multiline
+              onChangeText={(promptResponseText) => setPromptResponseText(promptResponseText)}
+              onContentSizeChange={(e) => updateInputHeight(e.nativeEvent.contentSize.height)}
+              placeholder={'Type an answer'}
+              style={[styles.messageThreadInput, { height: height + 15, width: screenWidth - 130}]}
+              value={promptResponseText}
+            />
           </ScrollView>
           {renderSendButton(true)}
         </View>
@@ -249,7 +249,7 @@ export default function MessageThread(props) {
            <Text style={styles.encouragementText}>Great Job 🎉</Text>
            <Image
              style={styles.encouragementGif}
-             source={require('../../../../resources/gifs/kid.gif')}/>
+             source={require('../../../../resources/assets/kid.gif')}/>
            <TouchableHighlight
              style={styles.encouragementButton}
              onPress={() => {hideEncouragement()}}>
@@ -290,7 +290,7 @@ export default function MessageThread(props) {
                 <Text style={styles.streakText}>{renderStreak()}</Text>
                 <Image
                   style={styles.streakIcon}
-                  source={require('../../../../resources/streak.png')}/>
+                  source={require('../../../../resources/assets/streak.png')}/>
               </View>
             </View>
           </View>

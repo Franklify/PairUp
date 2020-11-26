@@ -4,16 +4,17 @@ import React, {
   useState
 } from 'react'
 import fb from './initializeFirebase'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator} from '@react-navigation/stack'
 import { AntDesign } from '@expo/vector-icons'
 import PairUpContext from '../config/PairUpContext'
 
-import AboutScreen from '../components/about/AboutScreen'
 import ChangeAvatarScreen from '../components/profile/ChangeAvatarScreen'
 import ChangePasswordScreen from '../components/profile/ChangePasswordScreen'
 import ChatScreen from '../components/messages/tabs/ChatScreen'
 import LoginScreen from '../components/auth/LoginScreen'
+import OnboardingScreen from '../components/auth/OnboardingScreen'
 import ProfileScreen from '../components/profile/ProfileScreen'
 import ReflectionScreen from '../components/messages/tabs/ReflectionScreen'
 import ReflectionAndChatScreen from '../components/messages/tabs/ReflectionAndChatScreen'
@@ -21,10 +22,6 @@ import SignupScreen from '../components/auth/SignupScreen'
 import SplashScreen from '../components/auth/SplashScreen'
 
 const constants = require('../styles/constants.js')
-const reactNative = require('react-native');
-const {
-  AsyncStorage
-} = reactNative;
 
 const AuthStack = createStackNavigator();
 function AuthStackScreen () {
@@ -48,8 +45,6 @@ function AuthStackScreen () {
 
 function getIconName(route) {
   switch (route.name) {
-    case 'AboutTab':
-      return 'home'
     case 'ChatTab':
       return 'message1'
     case 'ReflectTab':
@@ -71,20 +66,13 @@ function MainTabsPairedScreen () {
           return <AntDesign name={iconName} size={26} color={color} />;
         },
       })}
-      initialRouteName="AboutTab"
+      initialRouteName="ReflectAndChatTab"
       tabBarOptions={{
         activeTintColor: constants.pastelBlue,
         inactiveTintColor: 'gray',
         keyboardHidesTabBar: Platform.OS !== 'ios'
       }}
     >
-      <MainTabsPaired.Screen
-        name="AboutTab"
-        component={AboutScreen}
-        options={{
-          tabBarLabel: 'Welcome',
-        }}
-       />
       <MainTabsPaired.Screen
         name="ReflectAndChatTab"
         component={ReflectionAndChatScreen}
@@ -113,19 +101,12 @@ function MainTabsSoloScreen () {
           return <AntDesign name={iconName} size={26} color={color} />;
         },
       })}
-      initialRouteName="AboutTab"
+      initialRouteName="ReflectTab"
       tabBarOptions={{
         activeTintColor: constants.pastelBlue,
         inactiveTintColor: 'gray',
       }}
     >
-      <MainTabsSolo.Screen
-        name="AboutTab"
-        component={AboutScreen}
-        options={{
-          tabBarLabel: 'Welcome',
-        }}
-      />
       <MainTabsSolo.Screen
         name="ReflectTab"
         component={ReflectionScreen}
@@ -205,12 +186,11 @@ function RootStackScreen() {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    AsyncStorage.multiGet(['email', 'password']).then(async (data) => {
-      const email = data[0][1]
-      if (email) {
+    AsyncStorage.getItem("@User").then(async (jsonValue) => {
+      const userLogin = (jsonValue != null) ? JSON.parse(jsonValue) : null
+      if (userLogin) {
         setLoading(true)
-        const password = data[1][1]
-        await context.login(email, password)
+        await context.login(userLogin.email, userLogin.password)
       }
       if (loading) setLoading(false);
     })
@@ -226,14 +206,24 @@ function RootStackScreen() {
         // We haven't finished checking for the token yet
         <RootStack.Screen name="Splash" component={SplashScreen} />
       ) : context.state.isAuthenticated ? (
-        // User is signed in
-        <RootStack.Screen
-          name="Home"
-          component={HomeStackScreen}
-          options={{
-            headerShown: false
-          }}
-        />
+          context.state.hasOnboarded ? (
+            // User is signed in
+            <RootStack.Screen
+              name="Home"
+              component={HomeStackScreen}
+              options={{
+                headerShown: false
+              }}
+            />
+          ) : (
+            <RootStack.Screen
+              name="Onboarding"
+              component={OnboardingScreen}
+              options={{
+                headerShown: false
+              }}
+            />
+          )
       ) : (
         // No token found, user isn't signed in
         <RootStack.Screen

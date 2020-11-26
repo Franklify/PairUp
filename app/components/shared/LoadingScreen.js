@@ -5,7 +5,6 @@ import {
 } from 'react-native'
 const styles = require('../../styles/styles.js')
 
-
 class LoadingScreen extends Component {
   render () {
     return (

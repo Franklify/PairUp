@@ -15,7 +15,7 @@ import {
 } from 'react-native'
 import MaterialInitials from 'react-native-material-initials/native'
 import PairUpContext from '../../../config/PairUpContext'
-const PairUpIcon = require('../../../../resources/pairup_icon.png')
+const PairUpIcon = require('../../../../resources/assets/pairup_icon.png')
 const constants = require('../../../styles/constants.js')
 const styles = require('../../../styles/styles.js')
 

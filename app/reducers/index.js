@@ -18,6 +18,7 @@ export function PairUpReducers (state, action) {
         // AuthState
         isAuthenticated: true,
         isPending: false,
+        hasOnboarded: action.hasOnboarded,
         // User
         user: {...state.user,
           displayName: action.user.displayName,
@@ -38,6 +39,10 @@ export function PairUpReducers (state, action) {
         errorMessage: action.errorMessage,
         isAuthenticated: false,
         isPending: false
+      }
+    case types.ONBOARDED:
+      return {...state,
+        hasOnboarded: true
       }
     case types.LOGOUT_ATTEMPT:
       return InitialState

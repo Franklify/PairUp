@@ -38,7 +38,7 @@ export default function LoginScreen({navigation}) {
       >
         <Image
           style={{width: 200, height: 200}}
-          source={require('./../../../resources/pairup_logo.png')}>
+          source={require('./../../../resources/assets/pairup_logo.png')}>
         </Image>
         <Text style={styles.authErrorText}>{context.state.errorMessage}</Text>
         <TextInput

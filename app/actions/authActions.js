@@ -18,10 +18,11 @@ export function loginAttempt () {
   }
 }
 
-export function loginSuccess (user) {
+export function loginSuccess (user, hasOnboarded) {
   return {
     type: types.LOGIN_SUCCESS,
-    user
+    user,
+    hasOnboarded
   }
 }
 
@@ -41,7 +42,8 @@ export function signupAttempt () {
 export function signupSuccess (user) {
   return {
     type: types.SIGNUP_SUCCESS,
-    user
+    user,
+    hasOnboarded: false
   }
 }
 
@@ -73,6 +75,12 @@ export function registerPushSuccess () {
 export function registerPushFailure () {
   return {
     type: types.REGISTER_PUSH_FAILURE
+  }
+}
+
+export function onboarded () {
+  return {
+    type: types.ONBOARDED
   }
 }
 

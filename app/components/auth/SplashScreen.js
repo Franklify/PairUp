@@ -12,8 +12,7 @@ export default function SplashScreen() {
     <View style={styles.loggingInContainer}>
       <Image
         style={styles.loggingInGif}
-        source={require('./../../../resources/loggingIn.gif')}/>
-      <Text style={styles.loggingInText}> Logging In... </Text>
+        source={require('./../../../resources/assets/pairup_splash.gif')}/>
     </View>
   );
 }

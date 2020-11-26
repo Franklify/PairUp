@@ -18,12 +18,12 @@ export default function ReflectionAndChatScreen({navigation}) {
   const reflectionAndChatThread = context.state.reflectionAndChatThread
 
   useEffect(() => {
-    const threads = context.state.user.threads
-    async function loadMessages() {
-      await context.loadMessages(reflectionAndChatType, threads.reflectionAndChat)
+    const user = context.state.user
+    async function loadMessages(reflectionAndChat) {
+      await context.loadMessages(reflectionAndChatType, reflectionAndChat)
     }
-    if (threads && threads.reflectionAndChat) {
-      loadMessages()
+    if (user && user.threads && user.threads.reflectionAndChat) {
+      loadMessages(user.threads.reflectionAndChat)
     }
   }, []);
 

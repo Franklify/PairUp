@@ -3,7 +3,7 @@ import React, {
   useState,
   useReducer
 } from 'react'
-//import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
@@ -18,22 +18,16 @@ import fb from './app/config/initializeFirebase'
 import { sendPushNotification } from './notifications'
 
 const db = fb.database()
-const reactNative = require('react-native');
-const {
-  AsyncStorage
-} = reactNative;
 
 const PairUpApp = () => {
   const [state, dispatch] = useReducer(PairUpReducers, InitialState)
   const [expoPushToken, setExpoPushToken] = useState(null)
+  const [isReady, setIsReady] = useState(false)
 
   // Auth
   async function login(email, password) {
     try {
       dispatch(ActionCreators.ActionCreators.loginAttempt())
-      const emailStorage = ["email", email]
-      const passwordStorage = ["password", password]
-      AsyncStorage.multiSet([emailStorage, passwordStorage]);
 
       const response = await fb.auth().signInWithEmailAndPassword(email, password)
       const responseUser = response.user
@@ -51,7 +45,17 @@ const PairUpApp = () => {
         threads: userInfo.threads,
         uid: responseUser.uid
       }
-      dispatch(ActionCreators.ActionCreators.loginSuccess(user))
+
+      const userLogin = {
+        email: email,
+        password: password
+      }
+      await AsyncStorage.setItem("@User", JSON.stringify(userLogin))
+
+      const onboardData = await AsyncStorage.getItem('@hasOnboarded')
+      const hasOnboarded = (onboardData === 'true')
+
+      dispatch(ActionCreators.ActionCreators.loginSuccess(user, hasOnboarded))
     } catch (error) {
       console.log('could not log in: ' + error.message)
       dispatch(ActionCreators.ActionCreators.loginFailure(error.message))
@@ -145,9 +149,19 @@ const PairUpApp = () => {
     }
   }
 
+  async function onboarded() {
+    try {
+      await AsyncStorage.setItem('@hasOnboarded', 'true')
+      dispatch(ActionCreators.ActionCreators.onboarded())
+    } catch (error) {
+      const errorMessage = error.message
+      console.log('onboarding failure', errorMessage)
+    }
+  }
+
   async function logout() {
     console.log("logging out...")
-    AsyncStorage.multiRemove(['email', 'password']);
+    await AsyncStorage.removeItem('@User');
     try {
       dispatch(ActionCreators.ActionCreators.logoutAttempt())
     } catch (error) {
@@ -442,6 +456,7 @@ const PairUpApp = () => {
     loadMessages,
     loadOldMessages,
     loadThreadList,
+    onboarded,
     sendMessage,
     submitPromptResponse
   }

@@ -198,11 +198,11 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#e7eff1',
+    backgroundColor: '#71B8CD',
   },
   loggingInGif: {
-    height: 200,
-    width: 200,
+    width: 300,
+    resizeMode: 'contain',
     marginBottom: 20,
   },
   loggingInText: {

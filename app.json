@@ -21,7 +21,12 @@
       "android"
     ],
     "assetBundlePatterns": [
-      "resources/*"
+      "resources/assets/*"
     ],
+    "splash": {
+      "image": "resources/assets/pairup_splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#71B8CD"
+    },
   }
 }

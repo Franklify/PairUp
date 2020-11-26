@@ -18,12 +18,12 @@ export default function ChatScreen({navigation}) {
   const chatOnlyThread = context.state.chatOnlyThread
 
   useEffect(() => {
-    const threads = context.state.user.threads
-    async function loadMessages() {
-      await context.loadMessages(chatOnlyType, threads.chatOnly)
+    const user = context.state.user
+    async function loadMessages(chatOnly) {
+      await context.loadMessages(chatOnlyType, chatOnly)
     }
-    if (threads && threads.chatOnly) {
-      loadMessages()
+    if (user && user.threads && user.threads.chatOnly) {
+      loadMessages(user.threads.chatOnly)
     }
   }, []);
 
