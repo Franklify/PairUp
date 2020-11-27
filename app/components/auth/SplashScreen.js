@@ -12,7 +12,7 @@ export default function SplashScreen() {
     <View style={styles.loggingInContainer}>
       <Image
         style={styles.loggingInGif}
-        source={require('./../../../resources/assets/pairup_splash.png')}/>
+        source={require('./../../../resources/assets/pairup_splash.gif')}/>
     </View>
   );
 }
