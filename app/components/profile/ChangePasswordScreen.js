@@ -11,6 +11,7 @@ import {
 } from 'react-native'
 import { changePassword } from '../../actions/authActions'
 import PairUpContext from '../../config/PairUpContext'
+const constants = require('../../styles/constants.js')
 const profileStyles = require('./styles.js')
 const styles = require('../../styles/styles.js')
 
@@ -52,7 +53,7 @@ export default function ChangePasswordScreen({navigation}) {
           autoCompleteType={'password'}
           textContentType={'password'}
           secureTextEntry
-          placeholderTextColor={constants.darkGray}
+          placeholderTextColor={constants.darkGrey}
           style={[styles.authInput, profileStyles.profileInput]}
         />
         <TextInput
@@ -61,7 +62,7 @@ export default function ChangePasswordScreen({navigation}) {
           autoCompleteType={'password'}
           textContentType={'password'}
           secureTextEntry
-          placeholderTextColor={constants.darkGray}
+          placeholderTextColor={constants.darkGrey}
           style={[styles.authInput, passwordMatch ? null : styles.authInputIncorrect, profileStyles.profileInput]}
         />
         <TouchableHighlight
