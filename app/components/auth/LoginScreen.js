@@ -70,7 +70,7 @@ export default function LoginScreen({navigation}) {
         />
         <Pressable
           disabled={isIncomplete()}
-          style={styles.authButton}
+          style={[styles.authButton, {opacity: isIncomplete() ? .5 : 1}]}
           onPress={() => login()}>
           <Text style={styles.authButtonText}>
             {context.state.isPending || context.state.isAuthenticated ? 'Logging In...' : 'Login'}

@@ -106,7 +106,7 @@ export default function SignupScreen({navigation}) {
         </View>
         <Pressable
           disabled={isIncomplete()}
-          style={styles.authButton}
+          style={[styles.authButton, {opacity: isIncomplete() ? .5 : 1}]}
           onPress={() => context.signup(firstName, lastName, email, password)}>
           <Text style={styles.authButtonText}> Sign Up </Text>
         </Pressable>
