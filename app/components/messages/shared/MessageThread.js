@@ -38,7 +38,7 @@ export default function MessageThread(props) {
 
   function sendMessage() {
     context.sendMessage(messageText, props.user.uid, props.user.displayName, props.pairUser.pushToken, props.focusedThread.id)
-    if (focusedPrompt) {
+    if (!focusedPrompt) {
       displayEncouragement()
     }
     setMessageText('')
@@ -247,8 +247,8 @@ export default function MessageThread(props) {
          <View style={styles.encouragementContainer}>
            <Text style={styles.encouragementText}>Great Job 🎉</Text>
            <Image
-             style={styles.encouragementGif}
-             source={require('../../../../resources/assets/kid.gif')}/>
+             style={styles.encouragementGraphic}
+             source={require('../../../../resources/assets/onboarding/congrats.png')}/>
            <TouchableHighlight
              style={styles.encouragementButton}
              onPress={() => {hideEncouragement()}}>
