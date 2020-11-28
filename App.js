@@ -3,11 +3,12 @@ import React, {
   useState,
   useReducer
 } from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationContainer } from '@react-navigation/native';
-import Constants from 'expo-constants';
-import * as Notifications from 'expo-notifications';
-import * as Permissions from 'expo-permissions';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { NavigationContainer } from '@react-navigation/native'
+import Constants from 'expo-constants'
+import * as Notifications from 'expo-notifications'
+import * as Permissions from 'expo-permissions'
+import { AppearanceProvider } from 'react-native-appearance'
 
 import * as ActionCreators from './app/actions'
 import RootStackScreen from './app/config/PairUpNavigator'
@@ -119,12 +120,19 @@ const PairUpApp = () => {
     }
   }
 
-  async function signup(firstName, lastName, email, phoneNumber, password) {
+  async function signup(firstName, lastName, email, password) {
     try {
       dispatch(ActionCreators.ActionCreators.signupAttempt())
       const response = await fb.auth().createUserWithEmailAndPassword(email, password)
       const displayName = {displayName: firstName + ' ' + lastName}
       await response.updateProfile(displayName)
+
+      await db.ref('/users/' + response.uid).set({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        avatarIndex: "None",
+      })
 
       const user = {
         displayName: response.displayName,
@@ -135,13 +143,6 @@ const PairUpApp = () => {
         uid: response.uid
       }
 
-      await db.ref('/users/' + response.uid).set({
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        phone_number: phoneNumber,
-        avatarIndex: "None",
-      })
       dispatch(ActionCreators.ActionCreators.signupSuccess(user))
     } catch (error) {
       console.log(error.message)
@@ -462,11 +463,13 @@ const PairUpApp = () => {
   }
 
   return (
-    <PairUpContext.Provider value={value}>
-      <NavigationContainer>
-        <RootStackScreen />
-      </NavigationContainer>
-    </PairUpContext.Provider>
+    <AppearanceProvider>
+      <PairUpContext.Provider value={value}>
+        <NavigationContainer>
+          <RootStackScreen />
+        </NavigationContainer>
+      </PairUpContext.Provider>
+    </AppearanceProvider>
   )
 }
 

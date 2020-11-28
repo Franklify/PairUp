@@ -157,14 +157,25 @@ const styles = StyleSheet.create({
     paddingLeft: 70,
     paddingRight: 70,
     borderRadius: 10,
-    marginTop: 25
+    marginTop: 25,
+    marginBottom: 20,
   },
   authButtonText: {
     color: 'white',
     fontSize: 20,
+    fontWeight: 'bold',
+  },
+  authButtonSubtext: {
+    color: 'white',
+    fontSize: 16,
+  },
+  authErrorTextBanner: {
+    backgroundColor: constants.errorRed,
+    textAlign: 'center',
+    borderRadius: 10,
   },
   authErrorText: {
-    color: 'red',
+    color: 'white',
     textAlign: 'center',
     margin: 10
   },
@@ -187,8 +198,17 @@ const styles = StyleSheet.create({
     borderWidth: 2
   },
   authTitle: {
+    color: 'white',
+    fontFamily: 'System',
     fontSize: 40,
-    textAlign: 'center'
+    fontWeight: 'bold',
+    textAlign: 'left',
+    marginBottom: 10
+  },
+  authLogo: {
+    width: 200,
+    height: 200,
+    marginBottom: 20
   },
   authContainerColor: {
     backgroundColor: constants.pastelBlue,
@@ -208,7 +228,21 @@ const styles = StyleSheet.create({
   loggingInText: {
     fontSize: 20,
     fontWeight: 'bold',
-    textAlign: 'center'
+    textAlign: 'center',
+  },
+  acceptTerms: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  acceptTermsTextContainer: {
+    flexDirection: 'row',
+    marginLeft: 20,
+  },
+  acceptTermsText: {
+    fontSize: 16,
+    color: 'white',
   },
 
   // TabBar Styles
@@ -529,14 +563,17 @@ const styles = StyleSheet.create({
     backgroundColor: constants.orange,
   },
   encouragementText: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: 'bold',
     marginTop: 200,
     marginBottom: 50,
     color: 'white',
   },
-  encouragementGif: {
+  encouragementGraphic: {
     alignItems: 'center',
+    height: 250,
+    width: 300,
+    resizeMode: "contain",
     margin: 15,
   },
   encouragementButton: {

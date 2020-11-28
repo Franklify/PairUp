@@ -49,13 +49,19 @@ export default function ChangePasswordScreen({navigation}) {
         <TextInput
           onChangeText={(password1) => updatePasswordText(password1)}
           placeholder={'New Password'}
+          autoCompleteType={'password'}
+          textContentType={'password'}
           secureTextEntry
+          placeholderTextColor={constants.darkGray}
           style={[styles.authInput, profileStyles.profileInput]}
         />
         <TextInput
-          onChangeText={(password2) => verifyPassword(password2)}
+          onChangeText={(password2) => updatePasswordText(password2)}
           placeholder={'Verify New Password'}
+          autoCompleteType={'password'}
+          textContentType={'password'}
           secureTextEntry
+          placeholderTextColor={constants.darkGray}
           style={[styles.authInput, passwordMatch ? null : styles.authInputIncorrect, profileStyles.profileInput]}
         />
         <TouchableHighlight
